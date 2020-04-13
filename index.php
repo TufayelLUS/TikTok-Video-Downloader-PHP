@@ -106,7 +106,7 @@ function getContent($url)
 		}
 	?>
 	<div class="m-5">
-		&nbsp;
+		&nbsp; 
 	</div>
 	<div class="bg-dark text-white" style="position: fixed; bottom: 0;width: 100%;padding:15px">Developed by <a target="_blank" href="https://www.github.com/TufayelLUS">tufayel.rocks</a> <span style="float: right;">Copyright &copy; <?php echo date("Y"); ?></span></div>
     <script type="text/javascript">
