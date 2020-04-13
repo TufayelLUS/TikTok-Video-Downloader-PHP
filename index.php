@@ -88,7 +88,7 @@ function getContent($url)
 			<div class="col-sm-6 col-md-6 col-lg-6 text-center mt-5"><ul style="list-style: none;padding: 0px">
 				<li>a video by <b>@<?php echo $username; ?></b></li>
 				<li><button class="btn btn-primary mt-3" onclick="window.location.href='<?php echo $contentURL; ?>'">Download Video</button></li>
-				<li><div class="alert alert-primary mb-0 mt-3">If the video opens directly, try saving it by pressing CTRL+S or on phone, save from three dots in the bottom left corner</div></li>
+				<li><div class="alert alert-primary mb-0 mt-3">If the video opens directly, try saving it by pressing CTRL+S or on phone, save from three dots in the bottom right corner</div></li>
 			</ul></div>
 		</div>
 	</div>
