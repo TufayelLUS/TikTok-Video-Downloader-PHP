@@ -79,7 +79,7 @@ function getContent($url)
 			if (count($check) > 1){
 				$contentURL = explode("\"",$check[1])[0];
 				$thumb = explode("\"",explode("\"thumbnailUrl\":[\"", $resp)[1])[0];
-				$username = explode("/",explode("@", $url)[1])[0];
+				$username = explode("/",explode("@",explode("\"",explode("\"url\":\"", $resp)[1])[0])[1])[0];
 			
 		?>
 	<div class="border m-3 mb-5">
@@ -109,5 +109,16 @@ function getContent($url)
 		&nbsp;
 	</div>
 	<div class="bg-dark text-white" style="position: fixed; bottom: 0;width: 100%;padding:15px">Developed by <a target="_blank" href="https://www.github.com/TufayelLUS">tufayel.rocks</a> <span style="float: right;">Copyright &copy; <?php echo date("Y"); ?></span></div>
+    <script type="text/javascript">
+        window.setInterval(function(){
+            if ($("input[name='tiktok-url']").attr("placeholder") == "https://www.tiktok.com/@username/video/1234567890123456789") {
+                $("input[name='tiktok-url']").attr("placeholder", "https://vm.tiktok.com/a1b2c3/");
+            }
+            else
+            {
+                $("input[name='tiktok-url']").attr("placeholder", "https://www.tiktok.com/@username/video/1234567890123456789");
+            }
+        }, 3000);
+    </script>
 </body>
 </html>
