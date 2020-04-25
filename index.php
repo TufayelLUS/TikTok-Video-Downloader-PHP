@@ -8,7 +8,7 @@ function getContent($url)
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER         => false,
         CURLOPT_FOLLOWLOCATION => true,
-	// Please change user agent below when the script fails to collect video
+	// Please change the user agent every time when the script stops working.
         CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36',
         CURLOPT_ENCODING       => "utf-8",
         CURLOPT_AUTOREFERER    => true,
@@ -107,19 +107,8 @@ function getContent($url)
 		}
 	?>
 	<div class="m-5">
-		&nbsp; 
+		&nbsp;
 	</div>
 	<div class="bg-dark text-white" style="position: fixed; bottom: 0;width: 100%;padding:15px">Developed by <a target="_blank" href="https://www.github.com/TufayelLUS">tufayel.rocks</a> <span style="float: right;">Copyright &copy; <?php echo date("Y"); ?></span></div>
-    <script type="text/javascript">
-        window.setInterval(function(){
-            if ($("input[name='tiktok-url']").attr("placeholder") == "https://www.tiktok.com/@username/video/1234567890123456789") {
-                $("input[name='tiktok-url']").attr("placeholder", "https://vm.tiktok.com/a1b2c3/");
-            }
-            else
-            {
-                $("input[name='tiktok-url']").attr("placeholder", "https://www.tiktok.com/@username/video/1234567890123456789");
-            }
-        }, 3000);
-    </script>
 </body>
 </html>
