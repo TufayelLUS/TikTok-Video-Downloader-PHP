@@ -8,7 +8,8 @@ function getContent($url)
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER         => false,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html',
+	// Please change user agent below when the script fails to collect video
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36',
         CURLOPT_ENCODING       => "utf-8",
         CURLOPT_AUTOREFERER    => true,
         CURLOPT_CONNECTTIMEOUT => 30,
