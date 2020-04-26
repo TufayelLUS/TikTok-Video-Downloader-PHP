@@ -8,4 +8,4 @@ A simple but effective one page TikTok video downloader script developed by Tufa
 # Usage
 Simply download and deploy. No changes required.
 <br>
-Live: <a rel="dofollow" href="https://www.tufayel.rocks/tiktok.php">Check Here for Demo</a> (Please do not judge based on live server)
+Live: <a href="https://www.tufayel.rocks/tiktok.php">Check Here for Demo</a> (Please do not judge based on live server)
