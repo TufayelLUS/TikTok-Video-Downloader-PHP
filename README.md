@@ -3,7 +3,7 @@ A simple but effective one page TikTok video downloader script developed by Tufa
 # Screenshot
 <img src="https://raw.githubusercontent.com/TufayelLUS/TikTok-Video-Downloader-PHP/master/Screenshot.PNG" alt="Interface" /><br>
 # Limitations
-* No short url support, please use https://www.tiktok.com/@user/video/1234567890123456789 format for video links
+* No short url support(sometimes works as long as you don't spam with same server ip), please use https://www.tiktok.com/@user/video/1234567890123456789 format for video links
 * No support for watermark removal
 # Usage
 Simply download and deploy. No changes required.
