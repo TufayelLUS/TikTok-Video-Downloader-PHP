@@ -116,7 +116,7 @@ function getContent($url)
 	</div>
 	<?php
 		if (isset($_POST['tiktok-url']) && !empty($_POST['tiktok-url'])) {
-			$url = $_POST['tiktok-url'];
+			$url = trim($_POST['tiktok-url']);
 			$resp = getContent($url);
 			//echo "$resp";
 			$check = explode("\"contentUrl\":\"", $resp);
