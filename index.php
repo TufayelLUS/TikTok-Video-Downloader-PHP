@@ -76,7 +76,7 @@ function getContent($url)
 <head>
 	<title>TikTok Video Downloader</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Gotu&display=swap" rel="stylesheet">
@@ -128,7 +128,14 @@ function getContent($url)
 				$cleanVideo = "https://api2.musical.ly/aweme/v1/playwm/?video_id=$videoKey";
 			
 		?>
-	<div class="border m-3 mb-5">
+	<script>
+	    $(document).ready(function(){
+		$('html, body').animate({
+				    scrollTop: ($('#result').offset().top)
+				},1000);
+	    });
+	</script>
+	<div class="border m-3 mb-5" id="result">
 		<div class="row m-0 p-2">
 			<div class="col-sm-5 col-md-5 col-lg-5 text-center"><img width="250px" height="250px" src="<?php echo $thumb; ?>"></div>
 			<div class="col-sm-6 col-md-6 col-lg-6 text-center mt-5"><ul style="list-style: none;padding: 0px">
@@ -143,7 +150,14 @@ function getContent($url)
 			else
 			{
 				?>
-				<div class="mx-5 px-5 my-3">
+				<script>
+				    $(document).ready(function(){
+					$('html, body').animate({
+							    scrollTop: ($('#result').offset().top)
+							},1000);
+				    });
+				</script>
+				<div class="mx-5 px-5 my-3" id="result">
 					<div class="alert alert-danger mb-0"><b>Please double check your url and try again.</b></div>
 				</div>
 
