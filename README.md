@@ -5,6 +5,11 @@ A simple but effective one page TikTok video downloader script with <b>watermark
 # Features
 * Supports short url(subject to change), normal video urls(desktop style urls only)
 * Supports watermark free video downloading
+# Acceptable URL Formats
+* https://www.tiktok.com/@username/videoID
+* https://vm.tiktok.com/videoID (or similar shorturls)<br>
+<b>N.B: </b> Any URL that is not under tiktok.com domain is not supported and will throw error<br>
+Do not put URL of m.tiktok.com as this is not redirected to web version automatically and you are requested to collect either short url or desktop urls
 # Limitations
 * May stop working for a while if the user agent is flagged for abuse. Change user agent if stops working.
 * Short URL support is subject to change anytime
