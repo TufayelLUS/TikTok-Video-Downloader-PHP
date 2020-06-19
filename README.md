@@ -1,12 +1,10 @@
 # TikTok Video Downloader PHP Script
-A simple but effective one page TikTok video downloader script with <b>watermark free support</b> enabled(currently disabled), developed by Tufayel Ahmed
-# Bugs and Issues
-<b>An issue has been identified related to watermark free version API and this(watermark free version) is not functional until the next update, still the regular download is working with watermarked video downloading.</b>
+A simple but effective one page TikTok video downloader script in PHP, developed by Tufayel Ahmed
 # Screenshot
 <img src="https://raw.githubusercontent.com/TufayelLUS/TikTok-Video-Downloader-PHP/master/Screenshot.PNG" alt="Interface" /><br>
 # Features
 * Supports short url(subject to change), normal video urls(desktop style urls only)
-* Supports watermark free video downloading
+* No support for watermark free video downloading
 # Acceptable URL Formats
 * https://www.tiktok.com/@username/videoID
 * https://vm.tiktok.com/videoID (or similar shorturls)<br>
