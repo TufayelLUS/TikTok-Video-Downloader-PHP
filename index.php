@@ -108,7 +108,7 @@ function getContent($url)
 		<h4>Shorturl support is subject to change!</h4>
 	</div>
 	<div class="text-center">
-		Paste a video url below and press "Download"
+		Paste a video url below and press "Download". Now scroll down to "Download Video" button and press to initiate the download process.
 		<form method="POST" class="mt-2">
 			<input type="text" placeholder="https://www.tiktok.com/@username/video/1234567890123456789" class="mb-3" name="tiktok-url"><br>
 			<button class="btn btn-success" type="submit">Download</button>
