@@ -4,7 +4,7 @@ A simple but effective one page TikTok video downloader script in PHP, developed
 <img src="https://raw.githubusercontent.com/TufayelLUS/TikTok-Video-Downloader-PHP/master/Screenshot.PNG" alt="Interface" /><br>
 # Features
 * Supports short url(subject to change), normal video urls(desktop style urls only)
-* No support for watermark free video downloading
+* Supports watermark free video downloading (thanks to <b>@dutchtom91</b> for the API suggestion)
 # Acceptable URL Formats
 * https://www.tiktok.com/@username/videoID
 * https://vm.tiktok.com/videoID (or similar shorturls)<br>
@@ -12,6 +12,7 @@ A simple but effective one page TikTok video downloader script in PHP, developed
 Do not put URL of m.tiktok.com as this is not redirected to web version automatically and you are requested to collect either short url or desktop urls
 # Limitations
 * May stop working for a while if the user agent is flagged for abuse. Change user agent if stops working.
+* Sometimes it may throw captcha and downloader might fail at that time. Try later in such cases.
 * Short URL support is subject to change anytime
 * Does not support private videos
 * No support for video urls of format m.tiktok.com/v/123456789.htm but supports shorturls and full desktop urls
