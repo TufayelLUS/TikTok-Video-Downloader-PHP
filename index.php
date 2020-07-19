@@ -148,7 +148,7 @@ function getContent($url, $geturl = false)
 			<div class="col-sm-5 col-md-5 col-lg-5 text-center"><img width="250px" height="250px" src="<?php echo $thumb; ?>"></div>
 			<div class="col-sm-6 col-md-6 col-lg-6 text-center mt-5"><ul style="list-style: none;padding: 0px">
 				<li>a video by <b>@<?php echo $username; ?></b></li>
-				<li><button class="btn btn-primary mt-3" onclick="window.location.href='<?php echo $contentURL; ?>'">Download Video</button> <button class="btn btn-danger mt-3" onclick="window.location.href='<?php echo $cleanVideo; ?>'">Download Watermark Free!</button></li>
+				<li><button class="btn btn-primary mt-3" onclick="window.location.href='<?php echo $contentURL; ?>'">Download Video</button> <button class="btn btn-info mt-3" onclick="window.location.href='<?php echo $cleanVideo; ?>'">Download Watermark Free!</button></li>
 				<li><div class="alert alert-primary mb-0 mt-3">If the video opens directly, try saving it by pressing CTRL+S or on phone, save from three dots in the bottom left corner</div></li>
 			</ul></div>
 		</div>
