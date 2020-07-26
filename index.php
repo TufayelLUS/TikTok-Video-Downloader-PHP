@@ -125,11 +125,11 @@ function getContent($url, $geturl = false)
 			$url = trim($_POST['tiktok-url']);
 			$resp = getContent($url);
 			//echo "$resp";
-			$check = explode("\"contentUrl\":\"", $resp);
+			$check = explode('video":{"urls":["', $resp);
 			if (count($check) > 1){
 				$contentURL = explode("\"",$check[1])[0];
-				$thumb = explode("\"",explode("\"thumbnailUrl\":[\"", $resp)[1])[0];
-				$username = explode("/",explode("@",explode("\"",explode("\"url\":\"", $resp)[1])[0])[1])[0];
+				$thumb = explode("\"",explode('og:image" content="', $resp)[1])[0];
+				$username = explode("/",explode("@",explode("\"",explode("\"canonicalHref\":\"", $resp)[1])[0])[1])[0];
 				$videoKey = getKey($contentURL);
 				$cleanVideo = "https://api.tiktokv.com/aweme/v1/playwm/?video_id=$videoKey";
 				$cleanVideo = getContent($cleanVideo, true);
