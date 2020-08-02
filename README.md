@@ -13,7 +13,7 @@ A simple but effective one page TikTok video downloader script in PHP, developed
 * In case watermark free button loads blank page, please keep refreshing that blank page again until you see the watermark free video. (API glitch)
 * Enjoy the video!
 # Acceptable URL Formats
-* https://www.tiktok.com/@username/videoID
+* https://www.tiktok.com/@username/video/videoID
 * https://vm.tiktok.com/videoID (or similar shorturls)<br>
 <b>N.B: </b> Any URL that is not under tiktok.com domain is not supported and will throw error<br>
 Do not put URL of m.tiktok.com as this is not redirected to web version automatically and you are requested to collect either short url or desktop urls
