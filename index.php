@@ -131,7 +131,7 @@ function getContent($url, $geturl = false)
 				$thumb = explode("\"",explode('og:image" content="', $resp)[1])[0];
 				$username = explode("/",explode("@",explode("\"",explode("\"canonicalHref\":\"", $resp)[1])[0])[1])[0];
 				$videoKey = getKey($contentURL);
-				$cleanVideo = "https://api.tiktokv.com/aweme/v1/playwm/?video_id=$videoKey&line=0&ratio=default&media_type=4&vr_type=0";
+				$cleanVideo = "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=$videoKey&line=0&ratio=default&media_type=4&vr_type=0";
 				$cleanVideo = getContent($cleanVideo, true);
 			
 		?>
