@@ -8,7 +8,7 @@ function getContent($url, $geturl = false)
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER         => false,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0',
+        CURLOPT_USERAGENT => 'okhttp',
         CURLOPT_ENCODING       => "utf-8",
         CURLOPT_AUTOREFERER    => true,
         CURLOPT_CONNECTTIMEOUT => 30,
@@ -131,7 +131,7 @@ function getContent($url, $geturl = false)
 				$thumb = explode("\"",explode('og:image" content="', $resp)[1])[0];
 				$username = explode("/",explode("@",explode("\"",explode("\"canonicalHref\":\"", $resp)[1])[0])[1])[0];
 				$videoKey = getKey($contentURL);
-				$cleanVideo = "https://api.tiktokv.com/aweme/v1/playwm/?video_id=$videoKey&line=0&ratio=default&media_type=4&vr_type=0";
+				$cleanVideo = "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=$videoKey&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4";
 				$cleanVideo = getContent($cleanVideo, true);
 			
 		?>
