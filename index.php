@@ -1,5 +1,53 @@
 <?php
 
+$store_locally = true; /* change to false if you don't want to host videos locally */ 
+
+function generateRandomString($length = 10) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
+}
+
+function downloadVideo($video_url, $geturl = false)
+{
+	$ch = curl_init();
+    $options = array(
+        CURLOPT_URL            => $video_url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HEADER         => false,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_USERAGENT => 'okhttp',
+        CURLOPT_ENCODING       => "utf-8",
+        CURLOPT_AUTOREFERER    => false,
+        CURLOPT_REFERER        => 'https://www.tiktok.com/',
+        CURLOPT_CONNECTTIMEOUT => 30,
+        CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_MAXREDIRS      => 10,
+    );
+    curl_setopt_array( $ch, $options );
+    if (defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')) {
+      curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+    }
+    $data = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if ($geturl === true)
+    {
+        return curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+    }
+    curl_close($ch);
+    $filename = "user_videos/" . generateRandomString() . ".mp4";
+    $d = fopen($filename, "w");
+    fwrite($d, $data);
+    fclose($d);
+    return $filename;
+}
+
 function getContent($url, $geturl = false)
   {
     $ch = curl_init();
@@ -138,7 +186,12 @@ function getContent($url, $geturl = false)
 				$videoKey = getKey($contentURL);
 				$cleanVideo = "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=$videoKey&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4";
 				$cleanVideo = getContent($cleanVideo, true);
-			
+				if (!file_exists("user_videos") && $store_locally){
+					mkdir("user_videos");
+				}
+				if ($store_locally){
+					$filename = downloadVideo($contentURL);
+				}
 		?>
 		<script>
 		    $(document).ready(function(){
@@ -154,7 +207,7 @@ function getContent($url, $geturl = false)
 			<div class="col-sm-6 col-md-6 col-lg-6 text-center mt-5"><ul style="list-style: none;padding: 0px">
 				<li>a video by <b>@<?php echo $username; ?></b></li>
 				<li>uploaded on <b><?php echo $create_time; ?></b></li>
-				<li><button class="btn btn-primary mt-3" onclick="window.location.href='<?php echo $contentURL; ?>'">Download Video</button> <button class="btn btn-info mt-3" onclick="window.location.href='<?php echo $cleanVideo; ?>'">Download Watermark Free!</button></li>
+				<li><button class="btn btn-primary mt-3" onclick="window.location.href='<?php if ($store_locally){ echo $filename;} else { echo $contentURL; } ?>'">Download Video</button> <button class="btn btn-info mt-3" onclick="window.location.href='<?php echo $cleanVideo; ?>'">Download Watermark Free!</button></li>
 				<li><div class="alert alert-primary mb-0 mt-3">If the video opens directly, try saving it by pressing CTRL+S or on phone, save from three dots in the bottom left corner</div></li>
 			</ul></div>
 		</div>
