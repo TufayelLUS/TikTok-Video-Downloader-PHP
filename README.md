@@ -27,3 +27,8 @@ Do not put URL of m.tiktok.com as this is not redirected to web version automati
 Simply download and deploy. No changes required.
 <br>
 Live: <a href="https://www.novice-geek.com/tiktok.php">Check Here for Demo</a>
+# Troubles Downloading Videos?
+* Create an issue in this repository and I will get to know.
+* Make sure to follow correct video URL format.
+* Try once again and wait for "Download Video" button to appear in bottom section of the page. It should auto scroll for you, if not, scroll down manually.
+* Please do not create issues about "Watermark free videos not downloading after videos uploaded from and after 27th July, 2020" as there is already a open issue for that. As soon as I have a solution that is feasible, I will update the code mentioning the changes.
