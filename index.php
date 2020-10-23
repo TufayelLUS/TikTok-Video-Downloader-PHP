@@ -189,12 +189,12 @@ function getContent($url, $geturl = false)
 			$url = trim($_POST['tiktok-url']);
 			$resp = getContent($url);
 			//echo "$resp";
-			$check = explode('video":{"urls":["', $resp);
+			$check = explode('"playAddr":"', $resp);
 			if (count($check) > 1){
 				$contentURL = explode("\"",$check[1])[0];
 				$thumb = explode("\"",explode('og:image" content="', $resp)[1])[0];
 				$username = explode('/',explode('"$pageUrl":"/@', $resp)[1])[0];
-				$create_time = explode('"', explode('"createTime":"', $resp)[1])[0];
+				$create_time = explode(',', explode('"createTime":', $resp)[1])[0];
 				$dt = new DateTime("@$create_time");
 				$create_time = $dt->format("d M Y H:i:s A");
 				$videoKey = getKey($contentURL);
