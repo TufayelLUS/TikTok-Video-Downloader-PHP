@@ -15,14 +15,21 @@ function generateRandomString($length = 10) {
 function downloadVideo($video_url, $geturl = false)
 {
     $ch = curl_init();
+    $headers = array(
+        'Range: bytes=0-',
+    );
     $options = array(
         CURLOPT_URL            => $video_url,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER         => false,
+        CURLOPT_HTTPHEADER     => $headers,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'okhttp',
+        CURLINFO_HEADER_OUT    => true,
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Mobile Safari/537.36',
         CURLOPT_ENCODING       => "utf-8",
-        CURLOPT_AUTOREFERER    => false,
+        CURLOPT_AUTOREFERER    => true,
+        CURLOPT_COOKIEJAR      => 'cookie.txt',
+		CURLOPT_COOKIEFILE     => 'cookie.txt',
         CURLOPT_REFERER        => 'https://www.tiktok.com/',
         CURLOPT_CONNECTTIMEOUT => 30,
         CURLOPT_SSL_VERIFYHOST => false,
@@ -70,9 +77,11 @@ function getContent($url, $geturl = false)
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER         => false,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'okhttp',
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Mobile Safari/537.36',
         CURLOPT_ENCODING       => "utf-8",
         CURLOPT_AUTOREFERER    => false,
+        CURLOPT_COOKIEJAR      => 'cookie.txt',
+		CURLOPT_COOKIEFILE     => 'cookie.txt',
         CURLOPT_REFERER        => 'https://www.tiktok.com/',
         CURLOPT_CONNECTTIMEOUT => 30,
         CURLOPT_SSL_VERIFYHOST => false,
@@ -189,9 +198,10 @@ function getContent($url, $geturl = false)
 			$url = trim($_POST['tiktok-url']);
 			$resp = getContent($url);
 			//echo "$resp";
-			$check = explode('"playAddr":"', $resp);
+			$check = explode('"downloadAddr":"', $resp);
 			if (count($check) > 1){
 				$contentURL = explode("\"",$check[1])[0];
+                $contentURL = str_replace("\\u0026", "&", $contentURL);
 				$thumb = explode("\"",explode('og:image" content="', $resp)[1])[0];
 				$username = explode('/',explode('"$pageUrl":"/@', $resp)[1])[0];
 				$create_time = explode(',', explode('"createTime":', $resp)[1])[0];
