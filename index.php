@@ -203,10 +203,11 @@ function getContent($url, $geturl = false)
 			$check = explode('"downloadAddr":"', $resp);
 			if (count($check) > 1){
 				$contentURL = explode("\"",$check[1])[0];
-                $contentURL = str_replace("\\u0026", "&", $contentURL);
+				$contentURL = str_replace("\\u0026", "&", $contentURL);
+				$contentURL = str_replace("\\u002F", "/", $contentURL);
 				$thumb = explode("\"",explode('og:image" content="', $resp)[1])[0];
-				$username = explode('/',explode('"$pageUrl":"/@', $resp)[1])[0];
-				$create_time = explode(',', explode('"createTime":', $resp)[1])[0];
+				$username = explode('"',explode('"uniqueId":"', $resp)[1])[0];
+				$create_time = explode('"', explode('"createTime":"', $resp)[1])[0];
 				$dt = new DateTime("@$create_time");
 				$create_time = $dt->format("d M Y H:i:s A");
 				$videoKey = getKey($contentURL);
@@ -239,7 +240,7 @@ function getContent($url, $geturl = false)
 		    });
 		</script>
 	<div class="border m-3 mb-5" id="result">
-	    <div class="text-center"><br>Bot/Scraper Development Services: <a target="_blank" href="https://www.we-can-solve.com">We-Can-Solve.com</a></div>
+	    <div class="text-center"><br>Bot/Scraper Development Services: <a target="_blank" href="https://www.developerhired.com">DeveloperHired.com</a></div>
 		<div class="row m-0 p-2">
 			<div class="col-sm-5 col-md-5 col-lg-5 text-center"><img width="250px" height="250px" src="<?php echo $thumb; ?>"></div>
 			<div class="col-sm-6 col-md-6 col-lg-6 text-center mt-5"><ul style="list-style: none;padding: 0px">
