@@ -26,7 +26,7 @@ Do not put URL of m.tiktok.com as this is not redirected to web version automati
 # Usage
 Simply download and deploy. No changes required.
 <br>
-Live: <a href="https://www.novice-geek.com/tiktok.php">Check Here for Demo</a>
+Live: Not Available Anymore due to no financial support. 
 # Troubles Downloading Videos?
 * Create an issue in this repository and I will get to know.
 * Make sure to follow correct video URL format.
