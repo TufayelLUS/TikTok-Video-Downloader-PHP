@@ -1,5 +1,6 @@
 # TikTok Video Downloader PHP Script
-A simple but effective one page TikTok video downloader script in PHP, developed by Tufayel Ahmed
+A simple but effective one page TikTok video downloader script in PHP, developed by Tufayel Ahmed<br>
+<b>Last Updated on:</b> 26 January, 2023.
 # Screenshot
 <img src="https://raw.githubusercontent.com/TufayelLUS/TikTok-Video-Downloader-PHP/master/Screenshot.PNG" alt="Interface" /><br>
 # Features
