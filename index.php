@@ -2,18 +2,7 @@
 
 $store_locally = true; /* change to false if you don't want to host videos locally */
 
-function generateRandomString($length = 10)
-{
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-    }
-    return $randomString;
-}
-
-function downloadVideo($video_url, $geturl = false)
+function downloadVideo($video_url, $username, $videoid, $geturl = false)
 {
     $ch = curl_init();
     $headers = array(
@@ -48,7 +37,7 @@ function downloadVideo($video_url, $geturl = false)
         return curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     }
     curl_close($ch);
-    $filename = "user_videos/" . generateRandomString() . ".mp4";
+    $filename = "user_videos/@" . $username . "_" . $videoid . "_" . date('Ymd_His') . ".mp4";
     $d = fopen($filename, "w");
     fwrite($d, $data);
     fclose($d);
@@ -58,7 +47,9 @@ function downloadVideo($video_url, $geturl = false)
 if (isset($_GET['url']) && !empty($_GET['url'])) {
     if ($_SERVER['HTTP_REFERER'] != "") {
         $url = $_GET['url'];
-        $name = downloadVideo($url);
+        $username = $_GET['username'];
+        $videoid = $_GET['videoid'];
+        $name = downloadVideo($url, $username, $videoid);
         echo $name;
         exit();
     } else {
@@ -75,7 +66,8 @@ function getContent($url, $geturl = false)
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER         => false,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Mobile Safari/537.36',
+        //CURLOPT_USERAGENT => 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Mobile Safari/537.36',
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0',
         CURLOPT_ENCODING       => "utf-8",
         CURLOPT_AUTOREFERER    => false,
         CURLOPT_COOKIEJAR      => 'cookie.txt',
@@ -225,7 +217,7 @@ function escape_sequence_decode($str)
 
     </div>
     <div class="text-center">
-        Paste a video url below and press "Download". Now scroll down to "Download Video" button or "Download Watermark Free!" button and press to initiate the download process.<br><br>
+        Paste a video url below and press "Download". Now scroll down to "Download Video" button and press to initiate the download process.<br><br>
         <form method="POST" class="mt-2">
             <input type="text" placeholder="https://www.tiktok.com/@username/video/1234567890123456789" class="mb-3" name="tiktok-url"><br><br>
             <button class="btn btn-success" type="submit">Download</button>
@@ -236,19 +228,21 @@ function escape_sequence_decode($str)
         $url = trim($_POST['tiktok-url']);
         $resp = getContent($url);
         //echo "$resp";
-        $check = explode('"downloadAddr":"', $resp);
+        $check = explode('"playAddr":"', $resp);
         if (count($check) > 1) {
             $contentURL = explode("\"", $check[1])[0];
             $contentURL = escape_sequence_decode($contentURL);
             $thumb = explode("\"", explode('"dynamicCover":"', $resp)[1])[0];
             $thumb = escape_sequence_decode($thumb);
-            $username = explode('/', explode('rel="canonical" href="https://www.tiktok.com/@', $resp)[1])[0];
+            // $username = explode('/', explode('rel="canonical" href="https://www.tiktok.com/@', $resp)[1])[0];
+			$username = explode('"', explode('"uniqueId":"', $resp)[1])[0];
+			$videoid = explode('"', explode('"itemStruct":{"id":"', $resp)[1])[0];
             $create_time = explode('"', explode('"createTime":"', $resp)[1])[0];
             $dt = new DateTime("@$create_time");
             $create_time = $dt->format("d M Y H:i:s A");
-            $videoKey = getKey($contentURL);
-            $cleanVideo = "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=$videoKey&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4";
-            $cleanVideo = getContent($cleanVideo, true);
+            // $videoKey = getKey($contentURL);
+            // $cleanVideo = "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=$videoKey&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4";
+            // $cleanVideo = getContent($cleanVideo, true);
             if (!file_exists("user_videos") && $store_locally) {
                 mkdir("user_videos");
             }
@@ -257,7 +251,7 @@ function escape_sequence_decode($str)
                 <script type="text/javascript">
                     $(document).ready(function() {
                         $('#wmarked_link').text("Please wait ...");
-                        $.get('./<?php echo basename($_SERVER['PHP_SELF']); ?>?url=<?php echo urlencode($contentURL); ?>').done(function(data) {
+                        $.get('./<?php echo basename($_SERVER['PHP_SELF']); ?>?url=<?php echo urlencode($contentURL); ?>&username=<?php echo urlencode($username); ?>&videoid=<?php echo urlencode($videoid); ?>').done(function(data) {
                             $('#wmarked_link').removeAttr('disabled');
                             $('#wmarked_link').attr('onclick', 'window.location.href="' + data + '"');
                             $('#wmarked_link').text("Download Video");
@@ -286,7 +280,7 @@ function escape_sequence_decode($str)
                                                                                                                                                 echo $filename;
                                                                                                                                             } else {
                                                                                                                                                 echo $contentURL;
-                                                                                                                                            } ?>'">Download Video</button> <button class="btn btn-info mt-3" onclick="window.location.href='<?php echo $cleanVideo; ?>'">Download Watermark Free!</button></li>
+                                                                                                                                            } ?>'">Download Video</button></li>
                             <li>
                                 <div class="alert alert-primary mb-0 mt-3">If the video opens directly, try saving it by pressing CTRL+S or on phone, save from three dots in the bottom left corner</div>
                             </li>
