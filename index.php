@@ -234,15 +234,11 @@ function escape_sequence_decode($str)
             $contentURL = escape_sequence_decode($contentURL);
             $thumb = explode("\"", explode('"dynamicCover":"', $resp)[1])[0];
             $thumb = escape_sequence_decode($thumb);
-            // $username = explode('/', explode('rel="canonical" href="https://www.tiktok.com/@', $resp)[1])[0];
 			$username = explode('"', explode('"uniqueId":"', $resp)[1])[0];
 			$videoid = explode('"', explode('"itemStruct":{"id":"', $resp)[1])[0];
             $create_time = explode('"', explode('"createTime":"', $resp)[1])[0];
             $dt = new DateTime("@$create_time");
             $create_time = $dt->format("d M Y H:i:s A");
-            // $videoKey = getKey($contentURL);
-            // $cleanVideo = "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=$videoKey&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4";
-            // $cleanVideo = getContent($cleanVideo, true);
             if (!file_exists("user_videos") && $store_locally) {
                 mkdir("user_videos");
             }
