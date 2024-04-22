@@ -1,5 +1,6 @@
 <?php
 
+// https://github.com/TufayelLUS/TikTok-Video-Downloader-PHP
 $store_locally = true; /* change to false if you don't want to host videos locally */
 
 function generateRandomString($length = 10)
@@ -75,7 +76,7 @@ function getContent($url, $geturl = false)
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER         => false,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Mobile Safari/537.36',
+        CURLOPT_USERAGENT      => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
         CURLOPT_ENCODING       => "utf-8",
         CURLOPT_AUTOREFERER    => false,
         CURLOPT_COOKIEJAR      => 'cookie.txt',
@@ -138,6 +139,7 @@ function getKey($playable)
     $tmp = explode("vid:", $data);
     if (count($tmp) > 1) {
         $key = trim(explode("%", $tmp[1])[0]);
+        $key = trim(explode(".", $key)[0]);
     } else {
         $key = "";
     }
@@ -235,14 +237,13 @@ function escape_sequence_decode($str)
     if (isset($_POST['tiktok-url']) && !empty($_POST['tiktok-url'])) {
         $url = trim($_POST['tiktok-url']);
         $resp = getContent($url);
-        //echo "$resp";
         $check = explode('"downloadAddr":"', $resp);
         if (count($check) > 1) {
             $contentURL = explode("\"", $check[1])[0];
             $contentURL = escape_sequence_decode($contentURL);
             $thumb = explode("\"", explode('"dynamicCover":"', $resp)[1])[0];
             $thumb = escape_sequence_decode($thumb);
-            $username = explode('/', explode('rel="canonical" href="https://www.tiktok.com/@', $resp)[1])[0];
+            $username = explode('"', explode('uniqueId":"', $resp)[1])[0];
             $create_time = explode('"', explode('"createTime":"', $resp)[1])[0];
             $dt = new DateTime("@$create_time");
             $create_time = $dt->format("d M Y H:i:s A");
@@ -275,7 +276,6 @@ function escape_sequence_decode($str)
                 });
             </script>
             <div class="border m-3 mb-5" id="result">
-                <div class="text-center"><br>Bot/Scraper Development Services: <a target="_blank" href="https://www.we-can-solve.com">We-Can-Solve.com</a></div>
                 <div class="row m-0 p-2">
                     <div class="col-sm-5 col-md-5 col-lg-5 text-center"><img width="250px" height="250px" src="<?php echo $thumb; ?>"></div>
                     <div class="col-sm-6 col-md-6 col-lg-6 text-center mt-5">
@@ -305,7 +305,6 @@ function escape_sequence_decode($str)
                 });
             </script>
             <div class="mx-5 px-5 my-3" id="result">
-                <div class="text-center"><br>Bot/Scraper Development Services: <a target="_blank" href="https://www.developerhired.com">DeveloperHired.com</a></div>
                 <div class="alert alert-danger mb-0"><b>Please double check your url and try again.</b></div>
             </div>
 
@@ -316,7 +315,7 @@ function escape_sequence_decode($str)
     <div class="m-5">
         &nbsp;
     </div>
-    <div class="bg-dark text-white" style="position: fixed; bottom: 0;width: 100%;padding:15px">Developed by <a target="_blank" href="https://www.github.com/TufayelLUS">tufayel.rocks</a> <span style="float: right;">Copyright &copy; <?php echo date("Y"); ?></span></div>
+    <div class="bg-dark text-white" style="position: fixed; bottom: 0;width: 100%;padding:15px">Developed by <a target="_blank" href="https://www.github.com/TufayelLUS">Tufayel Ahmed</a> <span style="float: right;">Copyright &copy; <?php echo date("Y"); ?></span></div>
     <script type="text/javascript">
         window.setInterval(function() {
             if ($("input[name='tiktok-url']").attr("placeholder") == "https://www.tiktok.com/@username/video/1234567890123456789") {
