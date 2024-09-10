@@ -140,6 +140,8 @@ function getKey($playable)
     if (count($tmp) > 1) {
         $key = trim(explode("%", $tmp[1])[0]);
         $key = trim(explode(".", $key)[0]);
+        $key = trim(explode("", $key)[0]);
+        $key = strval($key);
     } else {
         $key = "";
     }
@@ -181,6 +183,47 @@ function escape_sequence_decode($str)
 
         return html_entity_decode('&#' . $cp . ';');
     }, $str);
+}
+function getDownloadableLink($video_id)
+{
+    $tiktok_api_link = "https://www.tiktok.com/api/related/item_list/?WebIdLastTime=0&aid=1988&app_language=en&app_name=tiktok_web&browser_language=en-US&browser_name=Mozilla&browser_online=true&browser_platform=Win32&browser_version=5.0%20%28Windows%20NT%2010.0%3B%20Win64%3B%20x64%29%20AppleWebKit%2F537.36%20%28KHTML%2C%20like%20Gecko%29%20Chrome%2F128.0.0.0%20Safari%2F537.36&channel=tiktok_web&clientABVersions=70508271%2C72213608%2C72313477%2C72352584%2C72422414%2C72549782%2C72601137%2C72612481%2C72619473%2C72624997%2C72637450%2C72651444%2C72653054%2C72670548%2C72694149%2C72700847%2C72702737%2C72733145%2C72735220%2C72735383%2C72735708%2C72737832%2C72749174%2C72750221%2C72750682%2C72756892%2C72757183%2C72773131%2C70405643%2C71057832%2C71200802&cookie_enabled=true&count=16&coverFormat=2&cursor=0&data_collection_enabled=true&device_id=7360626814375659015&device_platform=web_pc&focus_state=false&from_page=video&history_len=4&isNonPersonalized=false&is_fullscreen=false&is_page_visible=true&itemID=$video_id&language=en&odinId=7360626731210523656&os=windows&priority_region=&referer=&region=BD&screen_height=823&screen_width=1463&tz_name=Asia%2FDhaka&user_is_login=false&verifyFp=verify_m0wp2e8o_qTzeGzyS_CGQe_4LkT_Bqce_tJvFVCXeDqSb&webcast_language=en";
+    $ch = curl_init();
+    $options = array(
+        CURLOPT_URL            => $tiktok_api_link,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HEADER         => false,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_USERAGENT      => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+        CURLOPT_ENCODING       => "utf-8",
+        CURLOPT_AUTOREFERER    => false,
+        CURLOPT_COOKIEJAR      => 'cookie.txt',
+        CURLOPT_COOKIEFILE     => 'cookie.txt',
+        CURLOPT_REFERER        => 'https://www.tiktok.com/',
+        CURLOPT_CONNECTTIMEOUT => 30,
+        CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_MAXREDIRS      => 10,
+    );
+    curl_setopt_array($ch, $options);
+    if (defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')) {
+        curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+    }
+    $data = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    $json = strval($data);
+    $json = json_decode($json, true);
+    $video = $json['itemList'];
+
+    foreach ($video as $key => $value) {
+        $video_id_found = $value['video']['id'];
+        if ($video_id_found == $video_id) {
+            $video_url = $value['video']['downloadAddr'];
+            return $video_url;
+        }
+    }
+    return "";
 }
 ?>
 
@@ -247,8 +290,11 @@ function escape_sequence_decode($str)
             $create_time = explode('"', explode('"createTime":"', $resp)[1])[0];
             $dt = new DateTime("@$create_time");
             $create_time = $dt->format("d M Y H:i:s A");
-            $videoKey = getKey($contentURL);
-            $cleanVideo = "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=$videoKey&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4";
+            // $videoKey = getKey($contentURL);
+            // $cleanVideo = "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=$videoKey&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4";
+            preg_match('/"itemStruct":{"id":"(.+?)"/', $resp, $matches);
+            $video_id = $matches[1];
+            $cleanVideo = getDownloadableLink($video_id);
             $cleanVideo = getContent($cleanVideo, true);
             if (!file_exists("user_videos") && $store_locally) {
                 mkdir("user_videos");
