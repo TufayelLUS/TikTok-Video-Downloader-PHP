@@ -1,17 +1,12 @@
 <?php
 
 // https://github.com/TufayelLUS/TikTok-Video-Downloader-PHP
-$store_locally = true; /* change to false if you don't want to host videos locally */
+$store_locally = true; /* Change to false if you don't want to host videos locally */
+$limit = 10; /* Set the limit for the amount of randomly generated characters */
 
-function generateRandomString($length = 10)
+function generateRandomString($limit)
 {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-    }
-    return $randomString;
+return substr(hash("md5", random_bytes(4)), 0, $limit);
 }
 
 function downloadVideo($video_url, $geturl = false)
