@@ -118,11 +118,11 @@ function get_video_url($tiktok_url, $cookie_file, $no_watermark) {
 }
 
 function stream_video($src_url, $cookie_file) {
+    while (ob_get_level()) ob_end_clean();
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_URL => $src_url,
-        CURLOPT_RETURNTRANSFER => false,
-        CURLOPT_FILE => fopen('php://output', 'w'),
+        CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTPHEADER => [
             'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/128.0.0.0 Safari/537.36',
@@ -134,8 +134,10 @@ function stream_video($src_url, $cookie_file) {
         CURLOPT_SSL_VERIFYHOST => 2,
         CURLOPT_SSL_VERIFYPEER => true,
     ]);
-    curl_exec($ch);
+    $data = curl_exec($ch);
     curl_close($ch);
+    echo $data;
+    flush();
 }
 
 function is_cli() {
