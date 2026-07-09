@@ -34,8 +34,8 @@ function downloadVideo($video_url, $geturl = false)
         CURLOPT_COOKIEFILE     => 'cookie.txt',
         CURLOPT_REFERER        => 'https://www.tiktok.com/',
         CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_SSL_VERIFYHOST => false,
-        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_TIMEOUT        => 30,
         CURLOPT_MAXREDIRS      => 10,
     );
@@ -83,8 +83,8 @@ function getContent($url, $geturl = false)
         CURLOPT_COOKIEFILE     => 'cookie.txt',
         CURLOPT_REFERER        => 'https://www.tiktok.com/',
         CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_SSL_VERIFYHOST => false,
-        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_TIMEOUT        => 30,
         CURLOPT_MAXREDIRS      => 10,
     );
@@ -124,8 +124,8 @@ function getKey($playable)
         CURLOPT_COOKIEFILE     => 'cookie.txt',
         CURLOPT_REFERER        => 'https://www.tiktok.com/',
         CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_SSL_VERIFYHOST => false,
-        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_TIMEOUT        => 30,
         CURLOPT_MAXREDIRS      => 10,
     );
@@ -200,8 +200,8 @@ function getDownloadableLink($video_id)
         CURLOPT_COOKIEFILE     => 'cookie.txt',
         CURLOPT_REFERER        => 'https://www.tiktok.com/',
         CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_SSL_VERIFYHOST => false,
-        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_TIMEOUT        => 30,
         CURLOPT_MAXREDIRS      => 10,
     );
