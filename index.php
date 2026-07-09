@@ -1,376 +1,225 @@
 <?php
+// TikTok Downloader — CLI + Web, with cookie caching
+// Usage: php index.php <url> [-n]          (CLI)
+//        ?url=https://...&nowm=1           (GET)
 
-// https://github.com/TufayelLUS/TikTok-Video-Downloader-PHP
-$store_locally = true; /* change to false if you don't want to host videos locally */
+$cookie_file = __DIR__ . '/_cookie.txt';
 
-function generateRandomString($length = 10)
-{
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-    }
-    return $randomString;
-}
-
-function downloadVideo($video_url, $geturl = false)
-{
-    $ch = curl_init();
-    $headers = array(
-        'Range: bytes=0-',
-    );
-    $options = array(
-        CURLOPT_URL            => $video_url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HEADER         => false,
-        CURLOPT_HTTPHEADER     => $headers,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLINFO_HEADER_OUT    => true,
-        CURLOPT_USERAGENT => 'okhttp',
-        CURLOPT_ENCODING       => "utf-8",
-        CURLOPT_AUTOREFERER    => true,
-        CURLOPT_COOKIEJAR      => 'cookie.txt',
-        CURLOPT_COOKIEFILE     => 'cookie.txt',
-        CURLOPT_REFERER        => 'https://www.tiktok.com/',
-        CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_SSL_VERIFYHOST => 2,
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_TIMEOUT        => 30,
-        CURLOPT_MAXREDIRS      => 10,
-    );
-    curl_setopt_array($ch, $options);
-    if (defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')) {
-        curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-    }
-    $data = curl_exec($ch);
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    if ($geturl === true) {
-        return curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-    }
-    curl_close($ch);
-    $filename = "user_videos/" . generateRandomString() . ".mp4";
-    $d = fopen($filename, "w");
-    fwrite($d, $data);
-    fclose($d);
-    return $filename;
-}
-
-if (isset($_GET['url']) && !empty($_GET['url'])) {
-    if ($_SERVER['HTTP_REFERER'] != "") {
-        $url = $_GET['url'];
-        $name = downloadVideo($url);
-        echo $name;
-        exit();
-    } else {
-        echo "";
-        exit();
-    }
-}
-
-function getContent($url, $geturl = false)
-{
-    $ch = curl_init();
-    $options = array(
-        CURLOPT_URL            => $url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HEADER         => false,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT      => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
-        CURLOPT_ENCODING       => "utf-8",
-        CURLOPT_AUTOREFERER    => false,
-        CURLOPT_COOKIEJAR      => 'cookie.txt',
-        CURLOPT_COOKIEFILE     => 'cookie.txt',
-        CURLOPT_REFERER        => 'https://www.tiktok.com/',
-        CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_SSL_VERIFYHOST => 2,
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_TIMEOUT        => 30,
-        CURLOPT_MAXREDIRS      => 10,
-    );
-    curl_setopt_array($ch, $options);
-    if (defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')) {
-        curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-    }
-    $data = curl_exec($ch);
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    if ($geturl === true) {
-        return curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-    }
-    curl_close($ch);
-    return strval($data);
-}
-
-function getKey($playable)
-{
-    $ch = curl_init();
-    $headers = [
-        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'Accept-Encoding: gzip, deflate, br',
-        'Accept-Language: en-US,en;q=0.9',
-        'Range: bytes=0-200000'
-    ];
-
-    $options = array(
-        CURLOPT_URL            => $playable,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HEADER         => false,
-        CURLOPT_HTTPHEADER     => $headers,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT => 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0',
-        CURLOPT_ENCODING       => "utf-8",
-        CURLOPT_AUTOREFERER    => false,
-        CURLOPT_COOKIEJAR      => 'cookie.txt',
-        CURLOPT_COOKIEFILE     => 'cookie.txt',
-        CURLOPT_REFERER        => 'https://www.tiktok.com/',
-        CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_SSL_VERIFYHOST => 2,
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_TIMEOUT        => 30,
-        CURLOPT_MAXREDIRS      => 10,
-    );
-    curl_setopt_array($ch, $options);
-    if (defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')) {
-        curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-    }
-    $data = curl_exec($ch);
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    $tmp = explode("vid:", $data);
-    if (count($tmp) > 1) {
-        $key = trim(explode("%", $tmp[1])[0]);
-        $key = trim(explode(".", $key)[0]);
-        $key = trim(explode("", $key)[0]);
-        $key = strval($key);
-    } else {
-        $key = "";
-    }
-    return $key;
-}
-function escape_sequence_decode($str)
-{
-
-    // [U+D800 - U+DBFF][U+DC00 - U+DFFF]|[U+0000 - U+FFFF]
-    $regex = '/\\\u([dD][89abAB][\da-fA-F]{2})\\\u([dD][c-fC-F][\da-fA-F]{2})
-              |\\\u([\da-fA-F]{4})/sx';
-
-    return preg_replace_callback($regex, function ($matches) {
-
-        if (isset($matches[3])) {
-            $cp = hexdec($matches[3]);
-        } else {
-            $lead = hexdec($matches[1]);
-            $trail = hexdec($matches[2]);
-
-            // http://unicode.org/faq/utf_bom.html#utf16-4
-            $cp = ($lead << 10) + $trail + 0x10000 - (0xD800 << 10) - 0xDC00;
-        }
-
-        // https://tools.ietf.org/html/rfc3629#section-3
-        // Characters between U+D800 and U+DFFF are not allowed in UTF-8
-        if ($cp > 0xD7FF && 0xE000 > $cp) {
-            $cp = 0xFFFD;
-        }
-
-        // https://github.com/php/php-src/blob/php-5.6.4/ext/standard/html.c#L471
-        // php_utf32_utf8(unsigned char *buf, unsigned k)
-
-        if ($cp < 0x80) {
-            return chr($cp);
-        } else if ($cp < 0xA0) {
-            return chr(0xC0 | $cp >> 6) . chr(0x80 | $cp & 0x3F);
-        }
-
+function escape_decode($str) {
+    $regex = '/\\\u([dD][89abAB][\da-fA-F]{2})\\\u([dD][c-fC-F][\da-fA-F]{2})|\\\u([\da-fA-F]{4})/sx';
+    return preg_replace_callback($regex, function ($m) {
+        $cp = isset($m[3]) ? hexdec($m[3]) : ((hexdec($m[1]) << 10) + hexdec($m[2]) + 0x10000 - (0xD800 << 10) - 0xDC00);
+        if ($cp > 0xD7FF && 0xE000 > $cp) $cp = 0xFFFD;
+        if ($cp < 0x80) return chr($cp);
+        if ($cp < 0xA0) return chr(0xC0 | $cp >> 6) . chr(0x80 | $cp & 0x3F);
         return html_entity_decode('&#' . $cp . ';');
     }, $str);
 }
-function getDownloadableLink($video_id)
-{
-    $tiktok_api_link = "https://www.tiktok.com/api/related/item_list/?WebIdLastTime=0&aid=1988&app_language=en&app_name=tiktok_web&browser_language=en-US&browser_name=Mozilla&browser_online=true&browser_platform=Win32&browser_version=5.0%20%28Windows%20NT%2010.0%3B%20Win64%3B%20x64%29%20AppleWebKit%2F537.36%20%28KHTML%2C%20like%20Gecko%29%20Chrome%2F128.0.0.0%20Safari%2F537.36&channel=tiktok_web&clientABVersions=70508271%2C72213608%2C72313477%2C72352584%2C72422414%2C72549782%2C72601137%2C72612481%2C72619473%2C72624997%2C72637450%2C72651444%2C72653054%2C72670548%2C72694149%2C72700847%2C72702737%2C72733145%2C72735220%2C72735383%2C72735708%2C72737832%2C72749174%2C72750221%2C72750682%2C72756892%2C72757183%2C72773131%2C70405643%2C71057832%2C71200802&cookie_enabled=true&count=16&coverFormat=2&cursor=0&data_collection_enabled=true&device_id=7360626814375659015&device_platform=web_pc&focus_state=false&from_page=video&history_len=4&isNonPersonalized=false&is_fullscreen=false&is_page_visible=true&itemID=$video_id&language=en&odinId=7360626731210523656&os=windows&priority_region=&referer=&region=BD&screen_height=823&screen_width=1463&tz_name=Asia%2FDhaka&user_is_login=false&verifyFp=verify_m0wp2e8o_qTzeGzyS_CGQe_4LkT_Bqce_tJvFVCXeDqSb&webcast_language=en";
+
+function cookies_fresh($file) {
+    if (!file_exists($file)) return false;
+    $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $now = time();
+    foreach ($lines as $line) {
+        if ($line[0] === '#') continue;
+        $parts = explode("\t", $line);
+        if (count($parts) >= 5 && is_numeric($parts[4]) && (int)$parts[4] > $now)
+            return true;
+    }
+    return false;
+}
+
+function curl_get($url, $cookie_file, $headers = []) {
     $ch = curl_init();
-    $options = array(
-        CURLOPT_URL            => $tiktok_api_link,
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HEADER         => false,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_USERAGENT      => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
-        CURLOPT_ENCODING       => "utf-8",
-        CURLOPT_AUTOREFERER    => false,
-        CURLOPT_COOKIEJAR      => 'cookie.txt',
-        CURLOPT_COOKIEFILE     => 'cookie.txt',
-        CURLOPT_REFERER        => 'https://www.tiktok.com/',
+        CURLOPT_HTTPHEADER => array_merge([
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/128.0.0.0 Safari/537.36',
+            'Referer: https://www.tiktok.com/',
+        ], $headers),
+        CURLOPT_COOKIEJAR => $cookie_file,
+        CURLOPT_COOKIEFILE => $cookie_file,
         CURLOPT_CONNECTTIMEOUT => 30,
+        CURLOPT_TIMEOUT => 60,
         CURLOPT_SSL_VERIFYHOST => 2,
         CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_TIMEOUT        => 30,
-        CURLOPT_MAXREDIRS      => 10,
-    );
-    curl_setopt_array($ch, $options);
-    if (defined('CURLOPT_IPRESOLVE') && defined('CURL_IPRESOLVE_V4')) {
-        curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-    }
+    ]);
     $data = curl_exec($ch);
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $info = curl_getinfo($ch);
     curl_close($ch);
-    $json = strval($data);
-    $json = json_decode($json, true);
-    $video = $json['itemList'];
+    return ['data' => $data, 'http' => $info['http_code'], 'type' => $info['content_type']];
+}
 
-    foreach ($video as $key => $value) {
-        $video_id_found = $value['video']['id'];
-        if ($video_id_found == $video_id) {
-            $video_url = $value['video']['downloadAddr'];
-            return $video_url;
+function extract_json_str($html, $key) {
+    $s = explode("$key\":\"", $html);
+    if (count($s) < 2) return null;
+    $e = explode('"', $s[1]);
+    return escape_decode($e[0]);
+}
+
+function parse_page($html) {
+    $dl = extract_json_str($html, 'downloadAddr');
+    $pl = extract_json_str($html, 'playAddr');
+    $thumb = extract_json_str($html, 'dynamicCover') ?? '';
+    $user = extract_json_str($html, 'uniqueId') ?? '';
+    return [$dl, $pl, $thumb, $user];
+}
+
+function get_video($tiktok_url, $cookie_file, $no_watermark = false) {
+    $need_refresh = !cookies_fresh($cookie_file);
+
+    if (!$need_refresh) {
+        $page = curl_get($tiktok_url, $cookie_file);
+        if ($page['http'] === 200) {
+            [$dl, $pl, $thumb, $user] = parse_page($page['data']);
+            $dl_url = $no_watermark ? $pl : $dl;
+            if ($dl_url) {
+                $r = curl_get($dl_url, $cookie_file);
+                if ($r['http'] === 200 && strlen($r['data']) >= 1000)
+                    return [$r['data'], $thumb, $user, null];
+            }
+        }
+        $need_refresh = true;
+    }
+
+    if ($need_refresh) {
+        $page = curl_get($tiktok_url, $cookie_file);
+        if ($page['http'] !== 200) return [null, null, null, "Page fetch failed: HTTP {$page['http']}"];
+        [$dl, $pl, $thumb, $user] = parse_page($page['data']);
+        $dl_url = $no_watermark ? $pl : $dl;
+        if (!$dl_url) return [null, null, null, "Could not find video URL in page"];
+        $r = curl_get($dl_url, $cookie_file);
+        if ($r['http'] !== 200 || strlen($r['data']) < 1000)
+            return [null, null, null, "Download failed: HTTP {$r['http']}, " . strlen($r['data']) . " bytes"];
+        return [$r['data'], $thumb, $user, null];
+    }
+
+    return [null, null, null, "Unknown error"];
+}
+
+function get_video_url($tiktok_url, $cookie_file, $no_watermark) {
+    $need_refresh = !cookies_fresh($cookie_file);
+    if (!$need_refresh) {
+        $page = curl_get($tiktok_url, $cookie_file);
+        if ($page['http'] === 200) {
+            [$dl, $pl, $thumb, $user] = parse_page($page['data']);
+            $u = $no_watermark ? $pl : $dl;
+            if ($u) return [$u, $thumb, $user, null];
         }
     }
-    return "";
+    $page = curl_get($tiktok_url, $cookie_file);
+    if ($page['http'] !== 200) return [null, null, null, "Page fetch failed: HTTP {$page['http']}"];
+    [$dl, $pl, $thumb, $user] = parse_page($page['data']);
+    $u = $no_watermark ? $pl : $dl;
+    if (!$u) return [null, null, null, "Could not find video URL"];
+    return [$u, $thumb, $user, null];
+}
+
+function stream_video($src_url, $cookie_file) {
+    while (ob_get_level()) ob_end_clean();
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $src_url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTPHEADER => [
+            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/128.0.0.0 Safari/537.36',
+            'Referer: https://www.tiktok.com/',
+        ],
+        CURLOPT_COOKIEFILE => $cookie_file,
+        CURLOPT_CONNECTTIMEOUT => 30,
+        CURLOPT_TIMEOUT => 120,
+        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_SSL_VERIFYPEER => true,
+    ]);
+    $data = curl_exec($ch);
+    curl_close($ch);
+    echo $data;
+    flush();
+}
+
+function is_cli() {
+    return php_sapi_name() === 'cli' || !isset($_SERVER['SERVER_SOFTWARE']);
+}
+
+// ─── Proxy mode (no file saved) ─────────────────────────────────────────────
+if (!is_cli() && isset($_GET['stream'])) {
+    $url = $_GET['url'] ?? '';
+    $nowm = isset($_GET['nowm']);
+    if (!$url) { http_response_code(400); exit; }
+    [$video_url, $thumb, $user, $err] = get_video_url($url, $cookie_file, $nowm);
+    if (!$video_url) { http_response_code(500); echo "Error: $err"; exit; }
+    preg_match('/@(\w+)/', $url, $u);
+    preg_match('/video\/(\d+)/', $url, $v);
+    $name = ($u[1] ?? 'tiktok') . '_' . ($v[1] ?? time()) . ($nowm ? '_nowm' : '') . '.mp4';
+    header('Content-Type: video/mp4');
+    header('Content-Disposition: attachment; filename="' . $name . '"');
+    header('Cache-Control: no-cache');
+    stream_video($video_url, $cookie_file);
+    exit;
+}
+
+// ─── CLI ─────────────────────────────────────────────────────────────────────
+if (is_cli()) {
+    if ($argc < 2) {
+        echo "Usage: php index.php <url> [-n]\n  -n   No watermark\n";
+        exit(1);
+    }
+    $url = $argv[1];
+    $nowm = in_array('-n', array_slice($argv, 2));
+    echo "Fetching...\n";
+    [$data, $thumb, $user, $err] = get_video($url, $cookie_file, $nowm);
+    if ($err) { echo "Error: $err\n"; exit(1); }
+    preg_match('/@(\w+)/', $url, $u);
+    preg_match('/video\/(\d+)/', $url, $v);
+    $suffix = $nowm ? '_nowm' : '';
+    $name = ($u[1] ?? 'tiktok') . '_' . ($v[1] ?? time()) . "$suffix.mp4";
+    file_put_contents($name, $data);
+    echo "Saved: $name (" . strlen($data) . " bytes)\n";
+    exit;
+}
+
+// ─── Web ─────────────────────────────────────────────────────────────────────
+$url = $_REQUEST['url'] ?? $_POST['tiktok-url'] ?? '';
+$error = '';
+$thumb = '';
+$username = '';
+$url_enc = '';
+
+if ($url) {
+    $url_enc = urlencode($url);
+    // Just get the metadata (thumb, username) — no file saved
+    [$video_url, $thumb, $username, $err] = get_video_url($url, $cookie_file, false);
+    if ($err) $error = $err;
 }
 ?>
-
 <!DOCTYPE html>
 <html>
-
-<head>
-    <title>TikTok Video Downloader</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Gotu&display=swap" rel="stylesheet">
-    <style type="text/css">
-        html,
-        body {
-            font-family: "Gotu"
-        }
-
-        input {
-            padding: 5px;
-            border-radius: 10px;
-            border-style: solid;
-            border-color: blue;
-            transition-duration: 0.5s;
-            width: 80%;
-        }
-
-        input:focus {
-            border-color: skyblue;
-            transition-duration: 0.5s;
-        }
-    </style>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TikTok Downloader</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;background:#f5f5f5;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:40px 20px}h1{font-size:28px;margin-bottom:8px;color:#111}h2{color:#666;font-weight:400;font-size:16px;margin-bottom:30px}.box{background:#fff;border-radius:12px;padding:30px;width:100%;max-width:500px;box-shadow:0 2px 12px rgba(0,0,0,.08)}input[type=text]{width:100%;padding:12px 16px;border:2px solid #ddd;border-radius:8px;font-size:15px;transition:border .2s}input:focus{outline:none;border-color:#fe2c55}button{width:100%;margin-top:12px;padding:12px;background:#fe2c55;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer}button:hover{background:#d92145}.result{margin-top:20px;text-align:center}.result img{border-radius:8px;max-width:240px;margin-bottom:12px}.result a{display:inline-block;padding:10px 24px;background:#25f4ee;color:#000;text-decoration:none;border-radius:8px;font-weight:600;margin:8px 4px 0}.result a.nowm{background:#fe2c55;color:#fff}.result a.nowm:hover{background:#d92145}.error{background:#fff0f0;color:#c00;padding:12px 16px;border-radius:8px;margin-top:20px}footer{margin-top:40px;color:#888;font-size:13px}</style>
 </head>
-
-<body class="bg-light">
-    <div class="text-center p-5">
-        <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjlweCIgaGVpZ2h0PSIzMnB4IiB2aWV3Qm94PSIwIDAgMjkgMzIiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDU1LjIgKDc4MTgxKSAtIGh0dHBzOi8vc2tldGNoYXBwLmNvbSAtLT4KICAgIDx0aXRsZT7nvJbnu4QgMjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxnIGlkPSLpobXpnaIxIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0i57yW57uELTIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAuOTc5MjM2LCAwLjAwMDAwMCkiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC43OTA3NjQ1LDEyLjMzIEwxMC43OTA3NjQ1LDExLjExIEMxMC4zNjcyNjI5LDExLjA0Mjg4ODcgOS45Mzk1MDY3NCwxMS4wMDYxMjg0IDkuNTEwNzY0NDgsMTAuOTk5OTc4NiBDNS4zNTk5NjU0OSwxMC45OTEyMjI4IDEuNjg1MDk2NzksMTMuNjgxMDIwNSAwLjQzODY2NzY5NCwxNy42NDAyNjU4IEMtMC44MDc3NjEzOTksMjEuNTk5NTExMiAwLjY2MzUwNTg0MiwyNS45MDkzODg3IDQuMDcwNzY0NDgsMjguMjggQzEuNTE4NDg0ODQsMjUuNTQ4NDgxNiAwLjgwOTc5OTU0NSwyMS41NzIwODM0IDIuMjYxMjY4MTcsMTguMTI3MDA1MyBDMy43MTI3MzY3OSwxNC42ODE5MjczIDcuMDUzMjk1NDUsMTIuNDExNTQyOCAxMC43OTA3NjQ1LDEyLjMzIEwxMC43OTA3NjQ1LDEyLjMzIFoiIGlkPSLot6/lvoQiIGZpbGw9IiMyNUY0RUUiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjAyMDc2NDUsMjYuMTUgQzEzLjM0MTUyODcsMjYuMTQ2ODc3NiAxNS4yNDkxNjYyLDI0LjMxODU0MTQgMTUuMzUwNzY0NSwyMiBMMTUuMzUwNzY0NSwxLjMxIEwxOS4xMzA3NjQ1LDEuMzEgQzE5LjA1MzYwNjgsMC44Nzc2ODIzMjIgMTkuMDE2NzgxOCwwLjQzOTEzMDk5MiAxOS4wMjA3NjQ1LDAgTDEzLjg1MDc2NDUsMCBMMTMuODUwNzY0NSwyMC42NyBDMTMuNzY0Nzk4LDIzLjAwMDMzODggMTEuODUyNjg1MywyNC44NDYyMTIgOS41MjA3NjQ0OCwyNC44NSBDOC44MjM5MDkxNCwyNC44NDQwNjcgOC4xMzg0Mjg4NCwyNC42NzI2OTY5IDcuNTIwNzY0NDgsMjQuMzUgQzguMzMyNjgyNDUsMjUuNDc0OTE1NCA5LjYzMzQ2MjAzLDI2LjE0Mzg4NzggMTEuMDIwNzY0NSwyNi4xNSBaIiBpZD0i6Lev5b6EIiBmaWxsPSIjMjVGNEVFIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0yNi4xOTA3NjQ1LDguMzMgTDI2LjE5MDc2NDUsNy4xOCBDMjQuNzk5NjQsNy4xODA0NzYyNSAyMy40MzkzNzgxLDYuNzY5OTYyNDIgMjIuMjgwNzY0NSw2IEMyMy4yOTY0NDQ2LDcuMTgwNzE3NjkgMjQuNjY4OTYyMiw3Ljk5ODYxMTc3IDI2LjE5MDc2NDUsOC4zMyBMMjYuMTkwNzY0NSw4LjMzIFoiIGlkPSLot6/lvoQiIGZpbGw9IiMyNUY0RUUiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTIyLjI4MDc2NDUsNiBDMjEuMTM5NDY3NSw0LjcwMDMzMTYxIDIwLjUxMDI5NjcsMy4wMjk2NTIxNiAyMC41MTA3NjQ1LDEuMyBMMTkuMTMwNzY0NSwxLjMgQzE5LjQ5MDk4MTIsMy4yMzI2ODUxOSAyMC42MzAwMzgzLDQuOTMyMjMwNjcgMjIuMjgwNzY0NSw2IEwyMi4yODA3NjQ1LDYgWiIgaWQ9Iui3r+W+hCIgZmlsbD0iI0ZFMkM1NSI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNOS41MTA3NjQ0OCwxNi4xNyBDNy41MTkyMTgxNCwxNi4xODAyMTc4IDUuNzkwMjE2MjYsMTcuNTQ0NTkzIDUuMzE3MjEyMDEsMTkuNDc5MTgwMyBDNC44NDQyMDc3NywyMS40MTM3Njc3IDUuNzQ4NjA5NTYsMjMuNDIyMDA2OSA3LjUxMDc2NDQ4LDI0LjM1IEM2LjU1NTk0ODM0LDIzLjAzMTc3MTggNi40MjEwNjg3MSwyMS4yODk0MzM2IDcuMTYxNjI4ODMsMTkuODM5OTYxMyBDNy45MDIxODg5NiwxOC4zOTA0ODg5IDkuMzkzMDY3MzQsMTcuNDc4Nzc4MiAxMS4wMjA3NjQ1LDE3LjQ4IEMxMS40NTQ3NzUyLDE3LjQ4NTQwODQgMTEuODg1NzkwOCwxNy41NTI3NTQ2IDEyLjMwMDc2NDUsMTcuNjggTDEyLjMwMDc2NDUsMTIuNDIgQzExLjg3Njk5MTksMTIuMzU2NTA1NiAxMS40NDkyNTYyLDEyLjMyMzA4ODcgMTEuMDIwNzY0NSwxMi4zMiBMMTAuNzkwNzY0NSwxMi4zMiBMMTAuNzkwNzY0NSwxNi4zMiBDMTAuMzczNjM2OCwxNi4yMDgxNTQ0IDkuOTQyNDQ5MzQsMTYuMTU3NjI0NiA5LjUxMDc2NDQ4LDE2LjE3IFoiIGlkPSLot6/lvoQiIGZpbGw9IiNGRTJDNTUiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTI2LjE5MDc2NDUsOC4zMyBMMjYuMTkwNzY0NSwxMi4zMyBDMjMuNjE1NDcsMTIuMzI1MDE5MyAyMS4xMDcwMjUsMTEuNTA5ODYyMiAxOS4wMjA3NjQ1LDEwIEwxOS4wMjA3NjQ1LDIwLjUxIEMxOS4wMDk3MzUyLDI1Ljc1NDQxNTggMTQuNzU1MTkxOSwzMC4wMDAwMTE2IDkuNTEwNzY0NDgsMzAgQzcuNTYzMTI3ODQsMzAuMDAzNDU1NiA1LjY2MjQwMzIxLDI5LjQwMjQ5MTIgNC4wNzA3NjQ0OCwyOC4yOCBDNi43MjY5ODY3NCwzMS4xMzY4MTA4IDEwLjg2MDgyNTcsMzIuMDc3MTk4OSAxNC40OTE0NzA2LDMwLjY1MDU1ODYgQzE4LjEyMjExNTUsMjkuMjIzOTE4MyAyMC41MDk5Mzc1LDI1LjcyMDg4MjUgMjAuNTEwNzY0NSwyMS44MiBMMjAuNTEwNzY0NSwxMS4zNCBDMjIuNjA0MDI0LDEyLjgzOTk2NjMgMjUuMTE1NTcyNCwxMy42NDQ1MDEzIDI3LjY5MDc2NDUsMTMuNjQgTDI3LjY5MDc2NDUsOC40OSBDMjcuMTg2NTkyNSw4LjQ4ODM5NTM1IDI2LjY4MzkzMTMsOC40MzQ3NzgxNiAyNi4xOTA3NjQ1LDguMzMgWiIgaWQ9Iui3r+W+hCIgZmlsbD0iI0ZFMkM1NSI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNMTkuMDIwNzY0NSwyMC41MSBMMTkuMDIwNzY0NSwxMCBDMjEuMTEzNDA4NywxMS41MDExODk4IDIzLjYyNTM2MjMsMTIuMzA1ODU0NiAyNi4yMDA3NjQ1LDEyLjMgTDI2LjIwMDc2NDUsOC4zIEMyNC42NzkyNTQyLDcuOTc4NzEyNjUgMjMuMzAzNDQwMyw3LjE3MTQ3NDkxIDIyLjI4MDc2NDUsNiBDMjAuNjMwMDM4Myw0LjkzMjIzMDY3IDE5LjQ5MDk4MTIsMy4yMzI2ODUxOSAxOS4xMzA3NjQ1LDEuMyBMMTUuMzUwNzY0NSwxLjMgTDE1LjM1MDc2NDUsMjIgQzE1LjI3NTE1MjEsMjMuODQ2NzY2NCAxNC4wMzgxOTkxLDI1LjQ0MzAyMDEgMTIuMjY4NzY5LDI1Ljk3NzIzMDIgQzEwLjQ5OTMzODksMjYuNTExNDQwMyA4LjU4NTcwOTQyLDI1Ljg2NjM4MTUgNy41MDA3NjQ0OCwyNC4zNyBDNS43Mzg2MDk1NiwyMy40NDIwMDY5IDQuODM0MjA3NzcsMjEuNDMzNzY3NyA1LjMwNzIxMjAxLDE5LjQ5OTE4MDMgQzUuNzgwMjE2MjYsMTcuNTY0NTkzIDcuNTA5MjE4MTQsMTYuMjAwMjE3OCA5LjUwMDc2NDQ4LDE2LjE5IEM5LjkzNDkwMywxNi4xOTM4NjkzIDEwLjM2NjEzODYsMTYuMjYxMjQ5OSAxMC43ODA3NjQ1LDE2LjM5IEwxMC43ODA3NjQ1LDEyLjM5IEM3LjAyMjMzNzksMTIuNDUzNjY5MSAzLjY1NjUzOTI5LDE0LjczMTk3NjggMi4yMDA5NDU2MSwxOC4xOTc2NzYxIEMwLjc0NTM1MTkzOCwyMS42NjMzNzUzIDEuNDc0OTQ0OTMsMjUuNjYxNzQ3NiA0LjA2MDc2NDQ4LDI4LjM5IEM1LjY2ODA5NTQyLDI5LjQ3NTUwNjMgNy41NzE1ODc4MiwzMC4wMzc4MjI0IDkuNTEwNzY0NDgsMzAgQzE0Ljc1NTE5MTksMzAuMDAwMDExNiAxOS4wMDk3MzUyLDI1Ljc1NDQxNTggMTkuMDIwNzY0NSwyMC41MSBaIiBpZD0i6Lev5b6EIiBmaWxsPSIjMDAwMDAwIj48L3BhdGg+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4="> <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iOTdweCIgaGVpZ2h0PSIyMnB4IiB2aWV3Qm94PSIwIDAgOTcgMjIiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDU1LjIgKDc4MTgxKSAtIGh0dHBzOi8vc2tldGNoYXBwLmNvbSAtLT4KICAgIDx0aXRsZT7nvJbnu4Q8L3RpdGxlPgogICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+CiAgICA8ZyBpZD0i6aG16Z2iMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Iue8lue7hCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMC43NzAwMDAsIDAuMjgwMDAwKSIgZmlsbC1ydWxlPSJub256ZXJvIj4KICAgICAgICAgICAgPHBvbHlnb24gaWQ9Iui3r+W+hCIgZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIzLjU1MjcxMzY4ZS0xNSAwLjA2IDE2LjEyIDAuMDYgMTQuNjQgNC43MiAxMC40NiA0LjcyIDEwLjQ2IDIxLjcyIDUuMjMgMjEuNzIgNS4yMyA0LjcyIDAuMDEgNC43MiI+PC9wb2x5Z29uPgogICAgICAgICAgICA8cG9seWdvbiBpZD0i6Lev5b6EIiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjQyLjUyIDAuMDYgNTkuMDEgMC4wNiA1Ny41MyA0LjcyIDUyLjk5IDQuNzIgNTIuOTkgMjEuNzIgNDcuNzcgMjEuNzIgNDcuNzcgNC43MiA0Mi41MyA0LjcyIj48L3BvbHlnb24+CiAgICAgICAgICAgIDxwb2x5Z29uIGlkPSLot6/lvoQiIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMTcuMSA2Ljk1IDIyLjI3IDYuOTUgMjIuMjcgMjEuNzIgMTcuMTQgMjEuNzIiPjwvcG9seWdvbj4KICAgICAgICAgICAgPHBvbHlnb24gaWQ9Iui3r+W+hCIgZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIyNC4zMiAwIDI5LjQ4IDAgMjkuNDggMTAuMDkgMzQuNiA1LjA5IDQwLjc2IDUuMDkgMzQuMjkgMTEuMzcgNDEuNTQgMjEuNzIgMzUuODUgMjEuNzIgMzEuMDEgMTQuNTMgMjkuNDggMTYuMDEgMjkuNDggMjEuNzIgMjQuMzIgMjEuNzIiPjwvcG9seWdvbj4KICAgICAgICAgICAgPHBvbHlnb24gaWQ9Iui3r+W+hCIgZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSI3OS4wMSAwIDg0LjIzIDAgODQuMjMgMTAuMDkgODkuMzQgNS4wOSA5NS41IDUuMDkgODkuMDMgMTEuMzcgOTYuMjMgMjEuNzIgOTAuNTQgMjEuNzIgODUuNzEgMTQuNTMgODQuMjMgMTYuMDEgODQuMjMgMjEuNzIgNzkuMDYgMjEuNzIiPjwvcG9seWdvbj4KICAgICAgICAgICAgPGNpcmNsZSBpZD0i5qSt5ZyG5b2iIiBmaWxsPSIjMDAwMDAwIiBjeD0iMTkuNjkiIGN5PSIyLjY2IiByPSIyLjYiPjwvY2lyY2xlPgogICAgICAgICAgICA8cGF0aCBkPSJNNTguMzUsMTIuODggQzU4LjM1MTU4MTQsOC4yNjY1NzI2OSA2MS45MDA2NDc1LDQuNDMwMDk3NTggNjYuNSw0LjA3IEM2Ni4yNyw0LjA3IDY1Ljk2LDQuMDcgNjUuNzMsNC4wNyBDNjEuMDU1Njk0Niw0LjM0MjY0OTU3IDU3LjQwNDc1NzIsOC4yMTI3NDk1OCA1Ny40MDQ3NTcyLDEyLjg5NSBDNTcuNDA0NzU3MiwxNy41NzcyNTA0IDYxLjA1NTY5NDYsMjEuNDQ3MzUwNCA2NS43MywyMS43MiBDNjUuOTYsMjEuNzIgNjYuMjcsMjEuNzIgNjYuNSwyMS43MiBDNjEuODg5MTMwNywyMS4zNTkwMjIxIDU4LjMzNTg5MTQsMTcuNTA0OTU2NCA1OC4zNSwxMi44OCBaIiBpZD0i6Lev5b6EIiBmaWxsPSIjMjVGNEVFIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik02OC41MSw0LjA0IEM2OC4yNyw0LjA0IDY3Ljk2LDQuMDQgNjcuNzMsNC4wNCBDNzIuMzE0NDYsNC40MTg2NTYzNyA3NS44NDIzMzI1LDguMjQ5OTI4ODkgNzUuODQyMzMyNSwxMi44NSBDNzUuODQyMzMyNSwxNy40NTAwNzExIDcyLjMxNDQ2LDIxLjI4MTM0MzYgNjcuNzMsMjEuNjYgQzY3Ljk2LDIxLjY2IDY4LjI3LDIxLjY2IDY4LjUxLDIxLjY2IEM3My4zOTIxOTcyLDIxLjY2IDc3LjM1LDE3LjcwMjE5NzIgNzcuMzUsMTIuODIgQzc3LjM1LDcuOTM3ODAyODEgNzMuMzkyMTk3MiwzLjk4IDY4LjUxLDMuOTggTDY4LjUxLDQuMDQgWiIgaWQ9Iui3r+W+hCIgZmlsbD0iI0ZFMkM1NSI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNNjcuMTEsMTcuMTggQzY0LjczNTE3NTYsMTcuMTggNjIuODEsMTUuMjU0ODI0NCA2Mi44MSwxMi44OCBDNjIuODEsMTAuNTA1MTc1NiA2NC43MzUxNzU2LDguNTggNjcuMTEsOC41OCBDNjkuNDg0ODI0NCw4LjU4IDcxLjQxLDEwLjUwNTE3NTYgNzEuNDEsMTIuODggQzcxLjQwNDUwMTYsMTUuMjUyNTQzMiA2OS40ODI1NDMyLDE3LjE3NDUwMTYgNjcuMTEsMTcuMTggTDY3LjExLDE3LjE4IFogTTY3LjExLDQuMDQgQzYyLjIyNzgwMjgsNC4wNCA1OC4yNyw3Ljk5NzgwMjgxIDU4LjI3LDEyLjg4IEM1OC4yNywxNy43NjIxOTcyIDYyLjIyNzgwMjgsMjEuNzIgNjcuMTEsMjEuNzIgQzcxLjk5MjE5NzIsMjEuNzIgNzUuOTUsMTcuNzYyMTk3MiA3NS45NSwxMi44OCBDNzUuOTUsMTAuNTM1NDg2MiA3NS4wMTg2NDU1LDguMjg2OTk3NjQgNzMuMzYwODIzOSw2LjYyOTE3NjA1IEM3MS43MDMwMDI0LDQuOTcxMzU0NDcgNjkuNDU0NTEzOCw0LjA0IDY3LjExLDQuMDQgWiIgaWQ9IuW9oueKtiIgZmlsbD0iIzAwMDAwMCI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+">
-        <h1 class="mt-5">Download <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjlweCIgaGVpZ2h0PSIzMnB4IiB2aWV3Qm94PSIwIDAgMjkgMzIiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDU1LjIgKDc4MTgxKSAtIGh0dHBzOi8vc2tldGNoYXBwLmNvbSAtLT4KICAgIDx0aXRsZT7nvJbnu4QgMjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxnIGlkPSLpobXpnaIxIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0i57yW57uELTIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAuOTc5MjM2LCAwLjAwMDAwMCkiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMC43OTA3NjQ1LDEyLjMzIEwxMC43OTA3NjQ1LDExLjExIEMxMC4zNjcyNjI5LDExLjA0Mjg4ODcgOS45Mzk1MDY3NCwxMS4wMDYxMjg0IDkuNTEwNzY0NDgsMTAuOTk5OTc4NiBDNS4zNTk5NjU0OSwxMC45OTEyMjI4IDEuNjg1MDk2NzksMTMuNjgxMDIwNSAwLjQzODY2NzY5NCwxNy42NDAyNjU4IEMtMC44MDc3NjEzOTksMjEuNTk5NTExMiAwLjY2MzUwNTg0MiwyNS45MDkzODg3IDQuMDcwNzY0NDgsMjguMjggQzEuNTE4NDg0ODQsMjUuNTQ4NDgxNiAwLjgwOTc5OTU0NSwyMS41NzIwODM0IDIuMjYxMjY4MTcsMTguMTI3MDA1MyBDMy43MTI3MzY3OSwxNC42ODE5MjczIDcuMDUzMjk1NDUsMTIuNDExNTQyOCAxMC43OTA3NjQ1LDEyLjMzIEwxMC43OTA3NjQ1LDEyLjMzIFoiIGlkPSLot6/lvoQiIGZpbGw9IiMyNUY0RUUiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTExLjAyMDc2NDUsMjYuMTUgQzEzLjM0MTUyODcsMjYuMTQ2ODc3NiAxNS4yNDkxNjYyLDI0LjMxODU0MTQgMTUuMzUwNzY0NSwyMiBMMTUuMzUwNzY0NSwxLjMxIEwxOS4xMzA3NjQ1LDEuMzEgQzE5LjA1MzYwNjgsMC44Nzc2ODIzMjIgMTkuMDE2NzgxOCwwLjQzOTEzMDk5MiAxOS4wMjA3NjQ1LDAgTDEzLjg1MDc2NDUsMCBMMTMuODUwNzY0NSwyMC42NyBDMTMuNzY0Nzk4LDIzLjAwMDMzODggMTEuODUyNjg1MywyNC44NDYyMTIgOS41MjA3NjQ0OCwyNC44NSBDOC44MjM5MDkxNCwyNC44NDQwNjcgOC4xMzg0Mjg4NCwyNC42NzI2OTY5IDcuNTIwNzY0NDgsMjQuMzUgQzguMzMyNjgyNDUsMjUuNDc0OTE1NCA5LjYzMzQ2MjAzLDI2LjE0Mzg4NzggMTEuMDIwNzY0NSwyNi4xNSBaIiBpZD0i6Lev5b6EIiBmaWxsPSIjMjVGNEVFIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik0yNi4xOTA3NjQ1LDguMzMgTDI2LjE5MDc2NDUsNy4xOCBDMjQuNzk5NjQsNy4xODA0NzYyNSAyMy40MzkzNzgxLDYuNzY5OTYyNDIgMjIuMjgwNzY0NSw2IEMyMy4yOTY0NDQ2LDcuMTgwNzE3NjkgMjQuNjY4OTYyMiw3Ljk5ODYxMTc3IDI2LjE5MDc2NDUsOC4zMyBMMjYuMTkwNzY0NSw4LjMzIFoiIGlkPSLot6/lvoQiIGZpbGw9IiMyNUY0RUUiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTIyLjI4MDc2NDUsNiBDMjEuMTM5NDY3NSw0LjcwMDMzMTYxIDIwLjUxMDI5NjcsMy4wMjk2NTIxNiAyMC41MTA3NjQ1LDEuMyBMMTkuMTMwNzY0NSwxLjMgQzE5LjQ5MDk4MTIsMy4yMzI2ODUxOSAyMC42MzAwMzgzLDQuOTMyMjMwNjcgMjIuMjgwNzY0NSw2IEwyMi4yODA3NjQ1LDYgWiIgaWQ9Iui3r+W+hCIgZmlsbD0iI0ZFMkM1NSI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNOS41MTA3NjQ0OCwxNi4xNyBDNy41MTkyMTgxNCwxNi4xODAyMTc4IDUuNzkwMjE2MjYsMTcuNTQ0NTkzIDUuMzE3MjEyMDEsMTkuNDc5MTgwMyBDNC44NDQyMDc3NywyMS40MTM3Njc3IDUuNzQ4NjA5NTYsMjMuNDIyMDA2OSA3LjUxMDc2NDQ4LDI0LjM1IEM2LjU1NTk0ODM0LDIzLjAzMTc3MTggNi40MjEwNjg3MSwyMS4yODk0MzM2IDcuMTYxNjI4ODMsMTkuODM5OTYxMyBDNy45MDIxODg5NiwxOC4zOTA0ODg5IDkuMzkzMDY3MzQsMTcuNDc4Nzc4MiAxMS4wMjA3NjQ1LDE3LjQ4IEMxMS40NTQ3NzUyLDE3LjQ4NTQwODQgMTEuODg1NzkwOCwxNy41NTI3NTQ2IDEyLjMwMDc2NDUsMTcuNjggTDEyLjMwMDc2NDUsMTIuNDIgQzExLjg3Njk5MTksMTIuMzU2NTA1NiAxMS40NDkyNTYyLDEyLjMyMzA4ODcgMTEuMDIwNzY0NSwxMi4zMiBMMTAuNzkwNzY0NSwxMi4zMiBMMTAuNzkwNzY0NSwxNi4zMiBDMTAuMzczNjM2OCwxNi4yMDgxNTQ0IDkuOTQyNDQ5MzQsMTYuMTU3NjI0NiA5LjUxMDc2NDQ4LDE2LjE3IFoiIGlkPSLot6/lvoQiIGZpbGw9IiNGRTJDNTUiPjwvcGF0aD4KICAgICAgICAgICAgPHBhdGggZD0iTTI2LjE5MDc2NDUsOC4zMyBMMjYuMTkwNzY0NSwxMi4zMyBDMjMuNjE1NDcsMTIuMzI1MDE5MyAyMS4xMDcwMjUsMTEuNTA5ODYyMiAxOS4wMjA3NjQ1LDEwIEwxOS4wMjA3NjQ1LDIwLjUxIEMxOS4wMDk3MzUyLDI1Ljc1NDQxNTggMTQuNzU1MTkxOSwzMC4wMDAwMTE2IDkuNTEwNzY0NDgsMzAgQzcuNTYzMTI3ODQsMzAuMDAzNDU1NiA1LjY2MjQwMzIxLDI5LjQwMjQ5MTIgNC4wNzA3NjQ0OCwyOC4yOCBDNi43MjY5ODY3NCwzMS4xMzY4MTA4IDEwLjg2MDgyNTcsMzIuMDc3MTk4OSAxNC40OTE0NzA2LDMwLjY1MDU1ODYgQzE4LjEyMjExNTUsMjkuMjIzOTE4MyAyMC41MDk5Mzc1LDI1LjcyMDg4MjUgMjAuNTEwNzY0NSwyMS44MiBMMjAuNTEwNzY0NSwxMS4zNCBDMjIuNjA0MDI0LDEyLjgzOTk2NjMgMjUuMTE1NTcyNCwxMy42NDQ1MDEzIDI3LjY5MDc2NDUsMTMuNjQgTDI3LjY5MDc2NDUsOC40OSBDMjcuMTg2NTkyNSw4LjQ4ODM5NTM1IDI2LjY4MzkzMTMsOC40MzQ3NzgxNiAyNi4xOTA3NjQ1LDguMzMgWiIgaWQ9Iui3r+W+hCIgZmlsbD0iI0ZFMkM1NSI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNMTkuMDIwNzY0NSwyMC41MSBMMTkuMDIwNzY0NSwxMCBDMjEuMTEzNDA4NywxMS41MDExODk4IDIzLjYyNTM2MjMsMTIuMzA1ODU0NiAyNi4yMDA3NjQ1LDEyLjMgTDI2LjIwMDc2NDUsOC4zIEMyNC42NzkyNTQyLDcuOTc4NzEyNjUgMjMuMzAzNDQwMyw3LjE3MTQ3NDkxIDIyLjI4MDc2NDUsNiBDMjAuNjMwMDM4Myw0LjkzMjIzMDY3IDE5LjQ5MDk4MTIsMy4yMzI2ODUxOSAxOS4xMzA3NjQ1LDEuMyBMMTUuMzUwNzY0NSwxLjMgTDE1LjM1MDc2NDUsMjIgQzE1LjI3NTE1MjEsMjMuODQ2NzY2NCAxNC4wMzgxOTkxLDI1LjQ0MzAyMDEgMTIuMjY4NzY5LDI1Ljk3NzIzMDIgQzEwLjQ5OTMzODksMjYuNTExNDQwMyA4LjU4NTcwOTQyLDI1Ljg2NjM4MTUgNy41MDA3NjQ0OCwyNC4zNyBDNS43Mzg2MDk1NiwyMy40NDIwMDY5IDQuODM0MjA3NzcsMjEuNDMzNzY3NyA1LjMwNzIxMjAxLDE5LjQ5OTE4MDMgQzUuNzgwMjE2MjYsMTcuNTY0NTkzIDcuNTA5MjE4MTQsMTYuMjAwMjE3OCA5LjUwMDc2NDQ4LDE2LjE5IEM5LjkzNDkwMywxNi4xOTM4NjkzIDEwLjM2NjEzODYsMTYuMjYxMjQ5OSAxMC43ODA3NjQ1LDE2LjM5IEwxMC43ODA3NjQ1LDEyLjM5IEM3LjAyMjMzNzksMTIuNDUzNjY5MSAzLjY1NjUzOTI5LDE0LjczMTk3NjggMi4yMDA5NDU2MSwxOC4xOTc2NzYxIEMwLjc0NTM1MTkzOCwyMS42NjMzNzUzIDEuNDc0OTQ0OTMsMjUuNjYxNzQ3NiA0LjA2MDc2NDQ4LDI4LjM5IEM1LjY2ODA5NTQyLDI5LjQ3NTUwNjMgNy41NzE1ODc4MiwzMC4wMzc4MjI0IDkuNTEwNzY0NDgsMzAgQzE0Ljc1NTE5MTksMzAuMDAwMDExNiAxOS4wMDk3MzUyLDI1Ljc1NDQxNTggMTkuMDIwNzY0NSwyMC41MSBaIiBpZD0i6Lev5b6EIiBmaWxsPSIjMDAwMDAwIj48L3BhdGg+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4="> <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iOTdweCIgaGVpZ2h0PSIyMnB4IiB2aWV3Qm94PSIwIDAgOTcgMjIiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDU1LjIgKDc4MTgxKSAtIGh0dHBzOi8vc2tldGNoYXBwLmNvbSAtLT4KICAgIDx0aXRsZT7nvJbnu4Q8L3RpdGxlPgogICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+CiAgICA8ZyBpZD0i6aG16Z2iMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Iue8lue7hCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMC43NzAwMDAsIDAuMjgwMDAwKSIgZmlsbC1ydWxlPSJub256ZXJvIj4KICAgICAgICAgICAgPHBvbHlnb24gaWQ9Iui3r+W+hCIgZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIzLjU1MjcxMzY4ZS0xNSAwLjA2IDE2LjEyIDAuMDYgMTQuNjQgNC43MiAxMC40NiA0LjcyIDEwLjQ2IDIxLjcyIDUuMjMgMjEuNzIgNS4yMyA0LjcyIDAuMDEgNC43MiI+PC9wb2x5Z29uPgogICAgICAgICAgICA8cG9seWdvbiBpZD0i6Lev5b6EIiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjQyLjUyIDAuMDYgNTkuMDEgMC4wNiA1Ny41MyA0LjcyIDUyLjk5IDQuNzIgNTIuOTkgMjEuNzIgNDcuNzcgMjEuNzIgNDcuNzcgNC43MiA0Mi41MyA0LjcyIj48L3BvbHlnb24+CiAgICAgICAgICAgIDxwb2x5Z29uIGlkPSLot6/lvoQiIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMTcuMSA2Ljk1IDIyLjI3IDYuOTUgMjIuMjcgMjEuNzIgMTcuMTQgMjEuNzIiPjwvcG9seWdvbj4KICAgICAgICAgICAgPHBvbHlnb24gaWQ9Iui3r+W+hCIgZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIyNC4zMiAwIDI5LjQ4IDAgMjkuNDggMTAuMDkgMzQuNiA1LjA5IDQwLjc2IDUuMDkgMzQuMjkgMTEuMzcgNDEuNTQgMjEuNzIgMzUuODUgMjEuNzIgMzEuMDEgMTQuNTMgMjkuNDggMTYuMDEgMjkuNDggMjEuNzIgMjQuMzIgMjEuNzIiPjwvcG9seWdvbj4KICAgICAgICAgICAgPHBvbHlnb24gaWQ9Iui3r+W+hCIgZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSI3OS4wMSAwIDg0LjIzIDAgODQuMjMgMTAuMDkgODkuMzQgNS4wOSA5NS41IDUuMDkgODkuMDMgMTEuMzcgOTYuMjMgMjEuNzIgOTAuNTQgMjEuNzIgODUuNzEgMTQuNTMgODQuMjMgMTYuMDEgODQuMjMgMjEuNzIgNzkuMDYgMjEuNzIiPjwvcG9seWdvbj4KICAgICAgICAgICAgPGNpcmNsZSBpZD0i5qSt5ZyG5b2iIiBmaWxsPSIjMDAwMDAwIiBjeD0iMTkuNjkiIGN5PSIyLjY2IiByPSIyLjYiPjwvY2lyY2xlPgogICAgICAgICAgICA8cGF0aCBkPSJNNTguMzUsMTIuODggQzU4LjM1MTU4MTQsOC4yNjY1NzI2OSA2MS45MDA2NDc1LDQuNDMwMDk3NTggNjYuNSw0LjA3IEM2Ni4yNyw0LjA3IDY1Ljk2LDQuMDcgNjUuNzMsNC4wNyBDNjEuMDU1Njk0Niw0LjM0MjY0OTU3IDU3LjQwNDc1NzIsOC4yMTI3NDk1OCA1Ny40MDQ3NTcyLDEyLjg5NSBDNTcuNDA0NzU3MiwxNy41NzcyNTA0IDYxLjA1NTY5NDYsMjEuNDQ3MzUwNCA2NS43MywyMS43MiBDNjUuOTYsMjEuNzIgNjYuMjcsMjEuNzIgNjYuNSwyMS43MiBDNjEuODg5MTMwNywyMS4zNTkwMjIxIDU4LjMzNTg5MTQsMTcuNTA0OTU2NCA1OC4zNSwxMi44OCBaIiBpZD0i6Lev5b6EIiBmaWxsPSIjMjVGNEVFIj48L3BhdGg+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik02OC41MSw0LjA0IEM2OC4yNyw0LjA0IDY3Ljk2LDQuMDQgNjcuNzMsNC4wNCBDNzIuMzE0NDYsNC40MTg2NTYzNyA3NS44NDIzMzI1LDguMjQ5OTI4ODkgNzUuODQyMzMyNSwxMi44NSBDNzUuODQyMzMyNSwxNy40NTAwNzExIDcyLjMxNDQ2LDIxLjI4MTM0MzYgNjcuNzMsMjEuNjYgQzY3Ljk2LDIxLjY2IDY4LjI3LDIxLjY2IDY4LjUxLDIxLjY2IEM3My4zOTIxOTcyLDIxLjY2IDc3LjM1LDE3LjcwMjE5NzIgNzcuMzUsMTIuODIgQzc3LjM1LDcuOTM3ODAyODEgNzMuMzkyMTk3MiwzLjk4IDY4LjUxLDMuOTggTDY4LjUxLDQuMDQgWiIgaWQ9Iui3r+W+hCIgZmlsbD0iI0ZFMkM1NSI+PC9wYXRoPgogICAgICAgICAgICA8cGF0aCBkPSJNNjcuMTEsMTcuMTggQzY0LjczNTE3NTYsMTcuMTggNjIuODEsMTUuMjU0ODI0NCA2Mi44MSwxMi44OCBDNjIuODEsMTAuNTA1MTc1NiA2NC43MzUxNzU2LDguNTggNjcuMTEsOC41OCBDNjkuNDg0ODI0NCw4LjU4IDcxLjQxLDEwLjUwNTE3NTYgNzEuNDEsMTIuODggQzcxLjQwNDUwMTYsMTUuMjUyNTQzMiA2OS40ODI1NDMyLDE3LjE3NDUwMTYgNjcuMTEsMTcuMTggTDY3LjExLDE3LjE4IFogTTY3LjExLDQuMDQgQzYyLjIyNzgwMjgsNC4wNCA1OC4yNyw3Ljk5NzgwMjgxIDU4LjI3LDEyLjg4IEM1OC4yNywxNy43NjIxOTcyIDYyLjIyNzgwMjgsMjEuNzIgNjcuMTEsMjEuNzIgQzcxLjk5MjE5NzIsMjEuNzIgNzUuOTUsMTcuNzYyMTk3MiA3NS45NSwxMi44OCBDNzUuOTUsMTAuNTM1NDg2MiA3NS4wMTg2NDU1LDguMjg2OTk3NjQgNzMuMzYwODIzOSw2LjYyOTE3NjA1IEM3MS43MDMwMDI0LDQuOTcxMzU0NDcgNjkuNDU0NTEzOCw0LjA0IDY3LjExLDQuMDQgWiIgaWQ9IuW9oueKtiIgZmlsbD0iIzAwMDAwMCI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+" alt="TikTok"> video easily!</h1>
-        <h4><b>Script last modified:</b> <span style="color:#236c82;font-style:italic"><?php date_default_timezone_set('UTC');
-                                                                                        echo date("F d Y H:i:s A", filemtime(__FILE__)); ?> (UTC)</span> <a href="https://github.com/TufayelLUS/TikTok-Video-Downloader-PHP/commits/master" rel="nofollow" title="Click to view commits history in github" target="_blank">Check Logs</a></h4>
-
-    </div>
-    <div class="text-center">
-        Paste a video url below and press "Download". Now scroll down to "Download Video" button or "Download Watermark Free!" button and press to initiate the download process.<br><br>
-        <form method="POST" class="mt-2">
-            <input type="text" placeholder="https://www.tiktok.com/@username/video/1234567890123456789" class="mb-3" name="tiktok-url"><br><br>
-            <button class="btn btn-success" type="submit">Download</button>
-        </form>
-    </div>
-    <?php
-    if (isset($_POST['tiktok-url']) && !empty($_POST['tiktok-url'])) {
-        $url = trim($_POST['tiktok-url']);
-        $resp = getContent($url);
-        $check = explode('"downloadAddr":"', $resp);
-        if (count($check) > 1) {
-            $contentURL = explode("\"", $check[1])[0];
-            $contentURL = escape_sequence_decode($contentURL);
-            $thumb = explode("\"", explode('"dynamicCover":"', $resp)[1])[0];
-            $thumb = escape_sequence_decode($thumb);
-            $username = explode('"', explode('uniqueId":"', $resp)[1])[0];
-            $create_time = explode('"', explode('"createTime":"', $resp)[1])[0];
-            $dt = new DateTime("@$create_time");
-            $create_time = $dt->format("d M Y H:i:s A");
-            // $videoKey = getKey($contentURL);
-            // $cleanVideo = "https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=$videoKey&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4";
-            preg_match('/"itemStruct":{"id":"(.+?)"/', $resp, $matches);
-            $video_id = $matches[1];
-            $cleanVideo = getDownloadableLink($video_id);
-            $cleanVideo = getContent($cleanVideo, true);
-            if (!file_exists("user_videos") && $store_locally) {
-                mkdir("user_videos");
-            }
-            if ($store_locally) {
-    ?>
-                <script type="text/javascript">
-                    $(document).ready(function() {
-                        $('#wmarked_link').text("Please wait ...");
-                        $.get('./<?php echo basename($_SERVER['PHP_SELF']); ?>?url=<?php echo urlencode($contentURL); ?>').done(function(data) {
-                            $('#wmarked_link').removeAttr('disabled');
-                            $('#wmarked_link').attr('onclick', 'window.location.href="' + data + '"');
-                            $('#wmarked_link').text("Download Video");
-                        });
-                    });
-                </script>
-            <?php
-            }
-            ?>
-            <script>
-                $(document).ready(function() {
-                    $('html, body').animate({
-                        scrollTop: ($('#result').offset().top)
-                    }, 1000);
-                });
-            </script>
-            <div class="border m-3 mb-5" id="result">
-                <div class="row m-0 p-2">
-                    <div class="col-sm-5 col-md-5 col-lg-5 text-center"><img width="250px" height="250px" src="<?php echo $thumb; ?>"></div>
-                    <div class="col-sm-6 col-md-6 col-lg-6 text-center mt-5">
-                        <ul style="list-style: none;padding: 0px">
-                            <li>a video by <b>@<?php echo $username; ?></b></li>
-                            <li>uploaded on <b><?php echo $create_time; ?></b></li>
-                            <li><button id="wmarked_link" disabled="disabled" class="btn btn-primary mt-3" onclick="window.location.href='<?php if ($store_locally) {
-                                                                                                                                                echo $filename;
-                                                                                                                                            } else {
-                                                                                                                                                echo $contentURL;
-                                                                                                                                            } ?>'">Download Video</button> <button class="btn btn-info mt-3" onclick="window.location.href='<?php echo $cleanVideo; ?>'">Download Watermark Free!</button></li>
-                            <li>
-                                <div class="alert alert-primary mb-0 mt-3">If the video opens directly, try saving it by pressing CTRL+S or on phone, save from three dots in the bottom left corner</div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        <?php
-        } else {
-        ?>
-            <script>
-                $(document).ready(function() {
-                    $('html, body').animate({
-                        scrollTop: ($('#result').offset().top)
-                    }, 1000);
-                });
-            </script>
-            <div class="mx-5 px-5 my-3" id="result">
-                <div class="alert alert-danger mb-0"><b>Please double check your url and try again.</b></div>
-            </div>
-
-    <?php
-        }
-    }
-    ?>
-    <div class="m-5">
-        &nbsp;
-    </div>
-    <div class="bg-dark text-white" style="position: fixed; bottom: 0;width: 100%;padding:15px">Developed by <a target="_blank" href="https://www.github.com/TufayelLUS">Tufayel Ahmed</a> <span style="float: right;">Copyright &copy; <?php echo date("Y"); ?></span></div>
-    <script type="text/javascript">
-        window.setInterval(function() {
-            if ($("input[name='tiktok-url']").attr("placeholder") == "https://www.tiktok.com/@username/video/1234567890123456789") {
-                $("input[name='tiktok-url']").attr("placeholder", "https://vm.tiktok.com/a1b2c3/");
-            } else {
-                $("input[name='tiktok-url']").attr("placeholder", "https://www.tiktok.com/@username/video/1234567890123456789");
-            }
-        }, 3000);
-    </script>
+<body>
+<h1>TikTok Downloader</h1>
+<h2>Paste a video URL and download</h2>
+<div class="box">
+<form method="post">
+<input type="text" name="tiktok-url" placeholder="https://www.tiktok.com/@user/video/1234567890" value="<?= htmlspecialchars($url) ?>" required>
+<button type="submit">Download</button>
+</form>
+<?php if ($error): ?>
+<div class="error"><?= htmlspecialchars($error) ?></div>
+<?php elseif ($url_enc): ?>
+<div class="result">
+<?php if ($thumb): ?><img src="<?= htmlspecialchars($thumb) ?>"><?php endif; ?>
+<?php if ($username): ?><p>@<?= htmlspecialchars($username) ?></p><?php endif; ?>
+<a href="?stream=1&url=<?= $url_enc ?>" class="btn">Download (with watermark)</a>
+<a href="?stream=1&nowm=1&url=<?= $url_enc ?>" class="btn nowm">Download (no watermark)</a>
+<p style="margin-top:8px;font-size:13px;color:#888">Streamed directly — no files stored on server</p>
+</div>
+<?php endif; ?>
+</div>
+<footer>Single-file TikTok downloader</footer>
 </body>
-
 </html>
