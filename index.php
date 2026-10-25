@@ -29,6 +29,17 @@ function cookies_fresh($file) {
     return false;
 }
 
+function is_allowed_scheme($url) {
+    $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+    return $scheme === 'http' || $scheme === 'https';
+}
+
+function is_tiktok_url($url) {
+    if (!is_allowed_scheme($url)) return false;
+    $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+    return $host === 'tiktok.com' || substr($host, -strlen('.tiktok.com')) === '.tiktok.com';
+}
+
 function curl_get($url, $cookie_file, $headers = []) {
     $ch = curl_init();
     curl_setopt_array($ch, [
@@ -45,6 +56,8 @@ function curl_get($url, $cookie_file, $headers = []) {
         CURLOPT_TIMEOUT => 60,
         CURLOPT_SSL_VERIFYHOST => 2,
         CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
     ]);
     $data = curl_exec($ch);
     $info = curl_getinfo($ch);
@@ -133,6 +146,8 @@ function stream_video($src_url, $cookie_file) {
         CURLOPT_TIMEOUT => 120,
         CURLOPT_SSL_VERIFYHOST => 2,
         CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
     ]);
     $data = curl_exec($ch);
     curl_close($ch);
@@ -149,11 +164,13 @@ if (!is_cli() && isset($_GET['stream'])) {
     $url = $_GET['url'] ?? '';
     $nowm = isset($_GET['nowm']);
     if (!$url) { http_response_code(400); exit; }
+    if (!is_tiktok_url($url)) { http_response_code(400); echo "Invalid URL. Only tiktok.com links are supported."; exit; }
     [$video_url, $thumb, $user, $err] = get_video_url($url, $cookie_file, $nowm);
     if (!$video_url) { http_response_code(500); echo "Error: $err"; exit; }
     preg_match('/@(\w+)/', $url, $u);
     preg_match('/video\/(\d+)/', $url, $v);
     $name = ($u[1] ?? 'tiktok') . '_' . ($v[1] ?? time()) . ($nowm ? '_nowm' : '') . '.mp4';
+    if (!is_allowed_scheme($video_url)) { http_response_code(502); echo "Invalid video URL."; exit; }
     header('Content-Type: video/mp4');
     header('Content-Disposition: attachment; filename="' . $name . '"');
     header('Cache-Control: no-cache');
@@ -189,10 +206,14 @@ $username = '';
 $url_enc = '';
 
 if ($url) {
-    $url_enc = urlencode($url);
-    // Just get the metadata (thumb, username) — no file saved
-    [$video_url, $thumb, $username, $err] = get_video_url($url, $cookie_file, false);
-    if ($err) $error = $err;
+    if (!is_tiktok_url($url)) {
+        $error = 'Invalid URL. Only tiktok.com links are supported.';
+    } else {
+        $url_enc = urlencode($url);
+        // Just get the metadata (thumb, username) — no file saved
+        [$video_url, $thumb, $username, $err] = get_video_url($url, $cookie_file, false);
+        if ($err) $error = $err;
+    }
 }
 ?>
 <!DOCTYPE html>
